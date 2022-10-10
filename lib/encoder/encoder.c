@@ -5,11 +5,12 @@ u16 ENC_getValue() {
 }
 
 void ENC_init() {
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
+    RCC_AHB1PeriphClockCmd(ENCODER_GPIO_RCC, ENABLE);
+    RCC_APB1PeriphClockCmd(ENCODER_TIM_RCC, ENABLE);
 
     GPIO_InitTypeDef gpio;
-    gpio.GPIO_Mode  = GPIO_Mode_IPU;
+    gpio.GPIO_Mode  = GPIO_Mode_OUT;
+    gpio.GPIO_PuPd  = GPIO_PuPd_UP;
     gpio.GPIO_Speed = GPIO_Speed_50MHz;
     gpio.GPIO_Pin   = ENC_CLK_PIN | ENC_DT_PIN;
     GPIO_Init(ENCODER_GPIOx, &gpio);

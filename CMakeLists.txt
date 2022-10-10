@@ -1,10 +1,17 @@
 cmake_minimum_required(VERSION 3.4)
 project(Test2)
 
+
 set(PERIPH_LIB lib/periph/)
 include_directories(
+        lib/tinystd
+        lib/ILI9341
+        lib/encoder
+        lib/usart
+        ${PERIPH_LIB}/
         ${PERIPH_LIB}/CMSIS/Device/ST/STM32F4xx/
         ${PERIPH_LIB}/CMSIS/Device/ST/STM32F4xx/Include/
+        ${PERIPH_LIB}/CMSIS/Include/
         ${PERIPH_LIB}/STM32F4xx_StdPeriph_Driver/inc/
         ${PERIPH_LIB}/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm
 )
@@ -16,7 +23,7 @@ set(CMAKE_OBJCOPY "arm-none-eabi-objcopy")
 
 set(LINK_SCRIPT STM32F407VG_FLASH_BL.ld)
 
-set(STARTUP system_stm32f4xx.c startup_stm32f40xx.s)
+set(STARTUP lib/periph/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c startup/startup_stm32f407xx.s)
 set(STARTUP ${STARTUP}
         ${PERIPH_LIB_SRC}/stm32f4xx_rcc.c
         ${PERIPH_LIB_SRC}/stm32f4xx_tim.c

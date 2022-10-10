@@ -1,7 +1,7 @@
 #ifndef TEST1_USART_H
 #define TEST1_USART_H
 
-#include <stm32f10x_usart.h>
+#include <stm32f4xx_usart.h>
 #include "../tiny_stdlib/itoa.h"
 
 void usartWrite(char chr);
