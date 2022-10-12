@@ -55,7 +55,10 @@ void system_clock_init(void) {
     RCC->CFGR = 0;
     RCC->CFGR = (RCC_CFGR_PPRE2_DIV2 | RCC_CFGR_PPRE1_DIV4 | RCC_CFGR_HPRE_DIV1);
     RCC_PLLCmd(ENABLE);
-    while((RCC->CR & RCC_CR_PLLRDY) == 0);                       // wait pll ready
+    int limit = 1000;
+    while((RCC->CR & RCC_CR_PLLRDY) == 0 && limit > 0) {
+      limit--;
+    };                       // wait pll ready
     RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
     RCC->DCKCFGR |=  RCC_DCKCFGR_TIMPRE;                         // clock timer
 
