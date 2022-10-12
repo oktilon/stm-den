@@ -2,3 +2,8 @@
 build
 .vscode-ctags
 .vscode/.cortex-debug.registers.state.json
+Debug
+settings
+stm-den.dep
+stm-den.ewd
+stm-den.ewt

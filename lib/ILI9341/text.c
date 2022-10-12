@@ -16,7 +16,7 @@ inline static void LCD_drawChar(u16 x0, u16 y0, unsigned char c, u16 color, u16 
     u16 scaledWidth       = (u16) (size * 6),
         doubleScaledWidth = scaledWidth * size;
 
-    u16 x1 = (u16) (x0 + scaledWidth - 1),
+    int16_t x1 = (u16) (x0 + scaledWidth - 1),
         y1 = (u16) (y0 + 8 * size - 1);
 
     u16 doubleSize = size * size;
