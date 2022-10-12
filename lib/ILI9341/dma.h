@@ -2,6 +2,8 @@
 #define TEST1_DMA_H
 
 #include "control.h"
+#include <stm32f4xx_spi.h>
+#include <stm32f4xx_rcc.h>
 #include <stm32f4xx_dma.h>
 
 #define dmaWait() while(SPI_I2S_GetFlagStatus(SPI_MASTER,SPI_I2S_FLAG_BSY) == SET);

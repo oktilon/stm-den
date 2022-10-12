@@ -5,7 +5,7 @@ void usartInit(void) {
     USART_InitTypeDef USART_InitStructure;
 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
 
     GPIO_InitStruct.GPIO_Pin   = GPIO_Pin_10;

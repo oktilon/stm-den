@@ -7,7 +7,7 @@ u16 dmaBufIndex = 0;
 u16 dmaBuffer[DMA_BUF_SIZE];
 
 void dmaInit(void) {
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+    RCC_AHBPeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);
 
     // TX
     NVIC_EnableIRQ(DMA1_Channel3_IRQn);

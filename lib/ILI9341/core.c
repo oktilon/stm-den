@@ -53,31 +53,36 @@ static void LCD_pinsInit() {
     GPIO_InitTypeDef gpioStructure;
 
     RCC_PCLK2Config(RCC_HCLK_Div2);
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-    RCC_APB2PeriphClockCmd(RCC_APB2ENR_AFIOEN, ENABLE);
-    RCC_APB2PeriphClockCmd(SPI_MASTER_GPIO_CLK | SPI_MASTER_CLK, ENABLE);
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
+    RCC_AHB1PeriphClockCmd(SPI_MASTER_GPIO_CLK | SPI_MASTER_CLK, ENABLE);
 
     // GPIO speed by default
     gpioStructure.GPIO_Speed = GPIO_Speed_50MHz;
 
     // GPIO for CS/DC/LED/RESET
     gpioStructure.GPIO_Pin  = TFT_CS_PIN | TFT_DC_PIN | TFT_RESET_PIN | TFT_LED_PIN;
-    gpioStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    gpioStructure.GPIO_Mode = GPIO_Mode_OUT; // GPIO_Mode_Out_PP;
+    gpioStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_Init(GPIOA, &gpioStructure);
 
     // GPIO for SPI
     gpioStructure.GPIO_Pin  = SPI_MASTER_PIN_SCK | SPI_MASTER_PIN_MOSI;
-    gpioStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+    gpioStructure.GPIO_Mode = GPIO_Mode_AF; // GPIO_Mode_AF_PP
+    gpioStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_Init(SPI_MASTER_GPIO, &gpioStructure);
 
     // GPIO for SPI
     gpioStructure.GPIO_Pin  = SPI_MASTER_PIN_MISO;
-    gpioStructure.GPIO_Mode = GPIO_Mode_IPD;
+    gpioStructure.GPIO_Mode = GPIO_Mode_IN; // GPIO_Mode_IPD
+    gpioStructure.GPIO_OType = GPIO_OType_PP;
+    gpioStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
     GPIO_Init(SPI_MASTER_GPIO, &gpioStructure);
 
     SPI_StructInit(&spiStructure);
     spiStructure.SPI_Mode              = SPI_Mode_Master;
     spiStructure.SPI_NSS               = SPI_NSS_Soft;
+    // spiStructure.SPI_NSS               = SPI_NSS_Hard;
     spiStructure.SPI_CPOL              = SPI_CPOL_High;
     spiStructure.SPI_CPHA              = SPI_CPHA_2Edge;
     spiStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_2;
