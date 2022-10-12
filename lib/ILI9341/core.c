@@ -1,5 +1,7 @@
 #include "core.h"
 
+RCC_ClocksTypeDef RCC_Clocks;
+
 static u16 screen_width  = LCD_PIXEL_WIDTH,
     screen_height = LCD_PIXEL_HEIGHT;
 
@@ -44,6 +46,33 @@ static const uint8_t init_commands[] = {
         0
 };
 
+void system_clock_init(void) {
+    SystemCoreClockUpdate();
+    RCC_DeInit();
+    RCC_HSEConfig(RCC_HSE_ON);
+    RCC_WaitForHSEStartUp();
+    RCC_PLLConfig(RCC_PLLSource_HSE, 8, 336, 2, 4); // Main delimiter, Main multiplier, Delimiter, AHB Delimiter
+    RCC->CFGR = 0;
+    RCC->CFGR = (RCC_CFGR_PPRE2_DIV2 | RCC_CFGR_PPRE1_DIV4 | RCC_CFGR_HPRE_DIV1);
+    RCC_PLLCmd(ENABLE);
+    while((RCC->CR & RCC_CR_PLLRDY) == 0);                       // wait pll ready
+    RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+    RCC->DCKCFGR |=  RCC_DCKCFGR_TIMPRE;                         // clock timer
+
+    // RCC_PCLK2Config(RCC_HCLK_Div2);  // From source variant
+
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE); // SPI1 pin's
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE); // SPI1 pin's
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
+}
+
+void systick_init(void) {
+    RCC_GetClocksFreq(&RCC_Clocks);
+    SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000);
+}
+
 //</editor-fold>
 
 //<editor-fold desc="LCD initialization functions">
@@ -51,11 +80,6 @@ static const uint8_t init_commands[] = {
 static void LCD_pinsInit() {
     SPI_InitTypeDef  spiStructure;
     GPIO_InitTypeDef gpioStructure;
-
-    RCC_PCLK2Config(RCC_HCLK_Div2);
-    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
-    RCC_AHB1PeriphClockCmd(SPI_MASTER_GPIO_CLK | SPI_MASTER_CLK, ENABLE);
 
     // GPIO speed by default
     gpioStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -91,6 +115,17 @@ static void LCD_pinsInit() {
     SPI_Cmd(SPI_MASTER, ENABLE);
 }
 
+void GPIO_init() {
+    GPIO_InitTypeDef gpioStructure;
+
+    gpioStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    gpioStructure.GPIO_Pin  = GPIO_Pin_15;
+    gpioStructure.GPIO_Mode = GPIO_Mode_OUT;
+    gpioStructure.GPIO_OType = GPIO_OType_PP;
+    gpioStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+    GPIO_Init(GPIOD, &gpioStructure);
+}
+
 void LCD_reset() {
     TFT_RST_RESET;
     delay_ms(10);
@@ -122,6 +157,9 @@ static void LCD_configure() {
 }
 
 void LCD_init() {
+    SystemInit();
+    system_clock_init();
+    systick_init();
     LCD_pinsInit();
     dmaInit();
 

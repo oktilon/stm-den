@@ -17,10 +17,14 @@
     LCD_setAddressWindow(x1, y1, x2, y2); \
     dmaSendCmd(LCD_RAMRD)
 
+void system_clock_init(void);
+void systick_init(void);
+
 u16 LCD_getWidth();
 u16 LCD_getHeight();
 
 void LCD_init();
+void GPIO_init();
 
 void LCD_setSpi8(void);
 void LCD_setSpi16(void);

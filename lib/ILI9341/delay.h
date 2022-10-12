@@ -3,7 +3,6 @@
 
 #include "stm32f4xx.h"
 
-void delay_us(uint32_t time);
 void delay_ms(uint32_t time);
 
 #endif	/* DELAY_H */

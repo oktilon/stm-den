@@ -18,8 +18,7 @@ inc = [
 src = [
       'main.c'
     , 'lib/periph/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c'
-    , 'lib/periph/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f40xx.s'
-    # , 'startup/startup_stm32f407xx.s'
+    , 'lib/periph/CMSIS/Device/ST/STM32F4xx/Source/Templates/SW4STM32/startup_stm32f40xx.s'
     , 'lib/periph/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rcc.c'
     , 'lib/periph/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_tim.c'
     , 'lib/periph/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_gpio.c'
@@ -45,8 +44,9 @@ main = executable(
     sources : src,
     include_directories : inc,
     name_suffix : 'elf',
-    c_args: ['-DSTM32F40_41xxx', '-DUSE_STDPERIPH_DRIVER', '-DHSE_VALUE=8000000'],
-    link_args : ['-Wl,--gc-sections', '-TSTM32F407VG_FLASH_NoBL.ld']
+    c_args: ['-DSTM32F40_41xxx', '-DUSE_STDPERIPH_DRIVER', '-DHSE_VALUE=8000000', '--specs=nano.specs', '--specs=nosys.specs', '-fno-common', '-fno-builtin', '-nostdlib', '-ffreestanding', '-pedantic', '-std=c99', '-Wall'],
+    # link_args removed : '-Wl,--gc-sections', , '--specs=nosys.specs'
+    link_args : [ '-T../STM32F407VG_FLASH_BL.ld', '--specs=nano.specs', '-nodefaultlibs']
     # dependencies : deps
 )
 

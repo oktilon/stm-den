@@ -7,15 +7,15 @@ u16 dmaBufIndex = 0;
 u16 dmaBuffer[DMA_BUF_SIZE];
 
 void dmaInit(void) {
-    RCC_AHBPeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);
+    RCC_AHB1PeriphResetCmd(RCC_AHB1Periph_DMA2, ENABLE);
 
     // TX
-    NVIC_EnableIRQ(DMA1_Channel3_IRQn);
-    DMA_ITConfig(DMA1_Channel3, DMA_IT_TC, ENABLE);
+    NVIC_EnableIRQ(DMA2_Stream3_IRQn);
+    DMA_ITConfig(DMA2_Stream3, DMA_IT_TC, ENABLE);
 
     // RX
-    NVIC_EnableIRQ(DMA1_Channel2_IRQn);
-    DMA_ITConfig(DMA1_Channel2, DMA_IT_TC, ENABLE);
+    NVIC_EnableIRQ(DMA2_Stream2_IRQn);
+    DMA_ITConfig(DMA2_Stream2, DMA_IT_TC, ENABLE);
 
     SPI_I2S_DMACmd(SPI_MASTER, SPI_I2S_DMAReq_Tx, ENABLE);
     SPI_I2S_DMACmd(SPI_MASTER, SPI_I2S_DMAReq_Rx, ENABLE);
@@ -24,12 +24,12 @@ void dmaInit(void) {
 //<editor-fold desc="Dma init options and start">
 
 inline static void dmaReceive8(u8 *data, u32 n) {
-    dmaStructure.DMA_MemoryBaseAddr = (u32) data;
-    dmaStructure.DMA_BufferSize     = n;
+    dmaStructure.DMA_Memory0BaseAddr    = (u32) data;
+    dmaStructure.DMA_BufferSize         = n;
 
     dmaStructure.DMA_Mode               = DMA_Mode_Normal;
     dmaStructure.DMA_MemoryInc          = DMA_MemoryInc_Enable;
-    dmaStructure.DMA_DIR                = DMA_DIR_PeripheralSRC;
+    dmaStructure.DMA_DIR                = DMA_DIR_PeripheralToMemory;
     dmaStructure.DMA_MemoryDataSize     = DMA_MemoryDataSize_Byte;
     dmaStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
 
@@ -41,12 +41,12 @@ inline static void dmaSend8(u8 *data, u32 n) {
     dmaStructure.DMA_PeripheralBaseAddr = (u32) &(SPI_MASTER->DR);
     dmaStructure.DMA_Priority           = DMA_Priority_Medium;
 
-    dmaStructure.DMA_MemoryBaseAddr = (u32) data;
-    dmaStructure.DMA_BufferSize     = n;
+    dmaStructure.DMA_Memory0BaseAddr    = (u32) data;
+    dmaStructure.DMA_BufferSize         = n;
 
     dmaStructure.DMA_Mode               = DMA_Mode_Normal;
     dmaStructure.DMA_MemoryInc          = DMA_MemoryInc_Enable;
-    dmaStructure.DMA_DIR                = DMA_DIR_PeripheralDST;
+    dmaStructure.DMA_DIR                = DMA_DIR_MemoryToPeripheral;
     dmaStructure.DMA_MemoryDataSize     = DMA_MemoryDataSize_Byte;
     dmaStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
 
@@ -58,12 +58,12 @@ inline static void dmaSendCircular16(u16 *data, u32 n) {
     dmaStructure.DMA_PeripheralBaseAddr = (u32) &(SPI_MASTER->DR);
     dmaStructure.DMA_Priority           = DMA_Priority_Medium;
 
-    dmaStructure.DMA_MemoryBaseAddr = (u32) data;
-    dmaStructure.DMA_BufferSize     = n;
+    dmaStructure.DMA_Memory0BaseAddr    = (u32) data;
+    dmaStructure.DMA_BufferSize         = n;
 
     dmaStructure.DMA_Mode               = DMA_Mode_Circular;
     dmaStructure.DMA_MemoryInc          = DMA_MemoryInc_Disable;
-    dmaStructure.DMA_DIR                = DMA_DIR_PeripheralDST;
+    dmaStructure.DMA_DIR                = DMA_DIR_MemoryToPeripheral;
     dmaStructure.DMA_MemoryDataSize     = DMA_MemoryDataSize_HalfWord;
     dmaStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
 
@@ -75,12 +75,12 @@ inline static void dmaSend16(u16 *data, u32 n) {
     dmaStructure.DMA_PeripheralBaseAddr = (u32) &(SPI_MASTER->DR);
     dmaStructure.DMA_Priority           = DMA_Priority_Medium;
 
-    dmaStructure.DMA_MemoryBaseAddr = (u32) data;
-    dmaStructure.DMA_BufferSize     = n;
+    dmaStructure.DMA_Memory0BaseAddr    = (u32) data;
+    dmaStructure.DMA_BufferSize         = n;
 
     dmaStructure.DMA_Mode               = DMA_Mode_Normal;
     dmaStructure.DMA_MemoryInc          = DMA_MemoryInc_Enable;
-    dmaStructure.DMA_DIR                = DMA_DIR_PeripheralDST;
+    dmaStructure.DMA_DIR                = DMA_DIR_MemoryToPeripheral;
     dmaStructure.DMA_MemoryDataSize     = DMA_MemoryDataSize_HalfWord;
     dmaStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
 
@@ -159,7 +159,7 @@ inline void dmaSendDataContBuf16(u16 *data, u32 n) {
 }
 
 
-inline void dmaSendDataCircular16(u16 *data, u32 n) {
+static inline void dmaSendDataCircular16(u16 *data, u32 n) {
     TFT_DC_SET;
     dmaSendCircular16(data, n);
     dmaWait();
@@ -180,17 +180,16 @@ inline void dmaFill16(u16 color, u32 n) {
 
 //<editor-fold desc="IRQ handlers">
 
-void DMA1_Channel2_IRQHandler(void) {
-    if (DMA_GetITStatus(DMA1_IT_TC2) == SET) {
-        DMA_Cmd(DMA1_Channel2, DISABLE);
-        DMA_ClearITPendingBit(DMA1_IT_TC2);
-    }
-}
-
 void DMA1_Channel3_IRQHandler(void) {
-    if (DMA_GetITStatus(DMA1_IT_TC3) == SET) {
-        DMA_Cmd(DMA1_Channel3, DISABLE);
-        DMA_ClearITPendingBit(DMA1_IT_TC3);
+    // Tx
+    if (DMA_GetITStatus(DMA2_Stream3, DMA_IT_TCIF3) == SET) {
+        DMA_Cmd(DMA2_Stream3, DISABLE);
+        DMA_ClearITPendingBit(DMA2_Stream3, DMA_IT_TCIF3);
+    }
+    // Rx
+    if (DMA_GetITStatus(DMA2_Stream2, DMA_IT_TCIF2) == SET) {
+        DMA_Cmd(DMA2_Stream2, DISABLE);
+        DMA_ClearITPendingBit(DMA2_Stream2, DMA_IT_TCIF2);
     }
 }
 

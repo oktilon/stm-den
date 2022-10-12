@@ -8,11 +8,11 @@
 
 #define dmaWait() while(SPI_I2S_GetFlagStatus(SPI_MASTER,SPI_I2S_FLAG_BSY) == SET);
 
-#define dmaStartRx() DMA_Init(DMA1_Channel2, &dmaStructure); \
-    DMA_Cmd(DMA1_Channel2, ENABLE);
+#define dmaStartRx() DMA_Init(DMA2_Stream2, &dmaStructure); \
+    DMA_Cmd(DMA2_Stream2, ENABLE);
 
-#define dmaStartTx() DMA_Init(DMA1_Channel3, &dmaStructure); \
-    DMA_Cmd(DMA1_Channel3, ENABLE);
+#define dmaStartTx() DMA_Init(DMA2_Stream3, &dmaStructure); \
+    DMA_Cmd(DMA2_Stream3, ENABLE);
 
 void dmaInit(void);
 
