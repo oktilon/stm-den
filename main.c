@@ -32,10 +32,12 @@ int main(void) {
         if(cnt > 50) {
             cnt = 0;
             if(on) {
-                GPIO_ResetBits(GPIOD, GPIO_Pin_15);
+                GPIO_ResetBits(GPIOD, GPIO_Pin_13);
+                // GPIO_ResetBits(GPIOD, GPIO_Pin_15);
                 on = 0;
             } else {
-                GPIO_SetBits(GPIOD, GPIO_Pin_15);
+                GPIO_SetBits(GPIOD, GPIO_Pin_13);
+                // GPIO_SetBits(GPIOD, GPIO_Pin_15);
                 on = 1;
             }
         }

@@ -24,6 +24,7 @@ src = [
     , 'lib/periph/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_gpio.c'
     , 'lib/periph/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.c'
     , 'lib/periph/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dma.c'
+    , 'lib/periph/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_usart.c'
     , 'lib/tinystd/itoa.c'
     , 'lib/ILI9341/delay.c'
     , 'lib/ILI9341/core.c'
