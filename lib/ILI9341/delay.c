@@ -2,18 +2,19 @@
 
 volatile u32 tick = 0;
 
+
 void SysTick_Handler(void) {
     tick++;
 }
 
 static inline void delay(uint32_t time) {
     tick = 0;
+    int8_t tmp = 1;
 
     do {
-        while (!(SysTick->CTRL && SysTick_CTRL_COUNTFLAG_Msk));
+        tmp = -tmp;
     } while (tick < time);
 
-    SysTick->CTRL = 0;
 }
 
 inline void delay_ms(uint32_t time) {

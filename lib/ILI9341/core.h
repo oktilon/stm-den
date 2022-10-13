@@ -3,6 +3,7 @@
 
 #include <stm32f4xx.h>
 #include <stm32f4xx_gpio.h>
+#include <stm32f4xx_usart.h>
 #include <stm32f4xx_rcc.h>
 #include <stm32f4xx_spi.h>
 #include "delay.h"
@@ -25,6 +26,7 @@ u16 LCD_getHeight();
 
 void LCD_init();
 void GPIO_init();
+void UART_init();
 
 void LCD_setSpi8(void);
 void LCD_setSpi16(void);

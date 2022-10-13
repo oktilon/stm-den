@@ -7,6 +7,7 @@ void _init(void) {;}
 int main(void) {
     LCD_init();
     GPIO_init();
+    UART_init();
     ENC_init();
     LCD_setOrientation(ORIENTATION_PORTRAIT);
     LCD_fillScreen(BLACK);

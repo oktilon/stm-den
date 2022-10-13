@@ -56,17 +56,18 @@ void system_clock_init(void) {
     RCC->CFGR = (RCC_CFGR_PPRE2_DIV2 | RCC_CFGR_PPRE1_DIV4 | RCC_CFGR_HPRE_DIV1);
     RCC_PLLCmd(ENABLE);
     int limit = 1000;
-    while((RCC->CR & RCC_CR_PLLRDY) == 0 && limit > 0) {
-      limit--;
-    };                       // wait pll ready
+    while((RCC->CR & RCC_CR_PLLRDY) == 0 && limit > 0);                       // wait pll ready
     RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
     RCC->DCKCFGR |=  RCC_DCKCFGR_TIMPRE;                         // clock timer
 
     // RCC_PCLK2Config(RCC_HCLK_Div2);  // From source variant
 
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE); // SPI1 pin's
-    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE); // SPI1 pin's
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE); // UART4 pin's
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE); // LED pin's
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);
+
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE);
 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
 }
@@ -106,6 +107,7 @@ static void LCD_pinsInit() {
     gpioStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
     GPIO_Init(SPI_MASTER_GPIO, &gpioStructure);
 
+    // SPI
     SPI_StructInit(&spiStructure);
     spiStructure.SPI_Mode              = SPI_Mode_Master;
     spiStructure.SPI_NSS               = SPI_NSS_Soft;
@@ -121,12 +123,54 @@ static void LCD_pinsInit() {
 void GPIO_init() {
     GPIO_InitTypeDef gpioStructure;
 
+    // LEDs on PD12-PD15
     gpioStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    gpioStructure.GPIO_Pin  = GPIO_Pin_15;
+    gpioStructure.GPIO_Pin  = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
     gpioStructure.GPIO_Mode = GPIO_Mode_OUT;
     gpioStructure.GPIO_OType = GPIO_OType_PP;
     gpioStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
     GPIO_Init(GPIOD, &gpioStructure);
+
+    // GPIO for UART4
+    // PC11 - UART4 Rx
+    // PC10 - UART4 Tx
+    gpioStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    gpioStructure.GPIO_Pin  = GPIO_Pin_11 | GPIO_Pin_10;
+    gpioStructure.GPIO_Mode = GPIO_Mode_AF;
+    gpioStructure.GPIO_OType = GPIO_OType_PP;
+    gpioStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+    GPIO_Init(GPIOC, &gpioStructure);
+    GPIO_PinAFConfig(GPIOC, GPIO_PinSource11, GPIO_AF_UART4);
+    GPIO_PinAFConfig(GPIOC, GPIO_PinSource10, GPIO_AF_UART4);
+}
+
+void UART_init() {
+    USART_InitTypeDef usartInit;
+
+    USART_DeInit(UART4);
+
+    usartInit.USART_BaudRate = 115200;
+    usartInit.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+    usartInit.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    usartInit.USART_Parity = USART_Parity_No;
+    usartInit.USART_StopBits = USART_StopBits_1;
+    usartInit.USART_WordLength = USART_WordLength_8b;
+    USART_Init(UART4, &usartInit);
+
+    UART4->CR1 |= USART_CR1_RXNEIE;
+    
+    // USART_ClockInitTypeDef usartClock;
+    // usartClock.USART_Clock = 0;
+    USART_Cmd(UART4, ENABLE);
+
+
+    NVIC_ClearPendingIRQ(UART4_IRQn);
+    NVIC_SetPriority(UART4_IRQn, 2);
+    NVIC_EnableIRQ(UART4_IRQn);
+    
+
+
+    USART_ITConfig(UART4, USART_IT_RXNE, ENABLE);
 }
 
 void LCD_reset() {
@@ -236,3 +280,8 @@ inline void LCD_setSpi16(void) {
 }
 
 // </editor-fold>
+
+
+void UART4_IRQHandler(void) {
+    __NOP();
+}
