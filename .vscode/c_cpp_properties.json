@@ -4,13 +4,22 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/lib/periph/**"
+                "${workspaceFolder}/lib/STM32F4xx/**",
+                "${workspaceFolder}/lib/STM32F4xx/CMSIS/Include/",
+                "${workspaceFolder}/lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/inc/",
+                "${workspaceFolder}/lib/STM32F4xx/CMSIS/Device/ST/STM32F4xx/Include/",
+                "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/include/**"
             ],
-            "defines": [],
-            "compilerPath": "/usr/bin/clang-12",
-            "cStandard": "c89",
-            "intelliSenseMode": "linux-clang-x64",
-            "configurationProvider": "ms-vscode.cmake-tools"
+            "defines": [
+                "STM32F40_41xxx",
+                "USE_STDPERIPH_DRIVER",
+                "HSE_VALUE=8000000"
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-msvc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64/cl.exe"
         }
     ],
     "version": 4

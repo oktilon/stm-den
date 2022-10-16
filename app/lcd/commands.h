@@ -1,7 +1,5 @@
-#ifndef TEST2_COMMANDS_H
-#define TEST2_COMMANDS_H
-
-//<editor-fold desc="Display commands">
+#ifndef LCD_COMMANDS_H
+#define LCD_COMMANDS_H
 
 /* Level 1 Commands */
 #define LCD_SWRESET             0x01   /* Software Reset */
@@ -91,21 +89,16 @@
 #define LCD_3GAMMA_EN           0xF2   /* 3 Gamma enable register */
 #define LCD_PRC                 0xF7   /* Pump ratio control register */
 
-//</editor-fold>
 
-//<editor-fold desc="Orientation">
-
+/* Orientation */
 #define ORIENTATION_PORTRAIT 0x48
 #define ORIENTATION_LANDSCAPE 0x28
 #define ORIENTATION_PORTRAIT_MIRROR 0x88
 #define ORIENTATION_LANDSCAPE_MIRROR 0xE8
 
-//</editor-fold>
-
-//<editor-fold desc="Dimensions">
+/* Dimensions */
 #define LCD_PIXEL_WIDTH       240
 #define LCD_PIXEL_HEIGHT      320
-#define LCD_PIXEL_COUNT    LCD_PIXEL_WIDTH * LCD_PIXEL_HEIGHT
-//</editor-fold>
+#define LCD_PIXEL_COUNT       LCD_PIXEL_WIDTH * LCD_PIXEL_HEIGHT
 
-#endif //TEST2_COMMANDS_H
+#endif //LCD_COMMANDS_H

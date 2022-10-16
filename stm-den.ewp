@@ -337,14 +337,16 @@
                 </option>
                 <option>
                     <name>CCIncludePath2</name>
-                    <state>$PROJ_DIR$\lib\encoder</state>
-                    <state>$PROJ_DIR$\lib\ILI9341</state>
-                    <state>$PROJ_DIR$\lib\periph\CMSIS\Include</state>
-                    <state>$PROJ_DIR$\lib\tinystd</state>
-                    <state>$PROJ_DIR$\lib\usart</state>
-                    <state>$PROJ_DIR$\lib\periph\STM32F4xx_StdPeriph_Driver\inc</state>
-                    <state>$PROJ_DIR$\lib\periph\CMSIS\Device\ST\STM32F4xx\Include</state>
-                    <state>$PROJ_DIR$\lib\periph</state>
+                    <state>$PROJ_DIR$\lib\STM32F4xx\CMSIS\Include</state>
+                    <state>$PROJ_DIR$\lib\STM32F4xx\STM32F4xx_StdPeriph_Driver\inc</state>
+                    <state>$PROJ_DIR$\lib\STM32F4xx\CMSIS\Device\ST\STM32F4xx\Include</state>
+                    <state>$PROJ_DIR$\lib\STM32F4xx</state>
+                    <state>$PROJ_DIR$\app</state>
+                    <state>$PROJ_DIR$\app\board</state>
+                    <state>$PROJ_DIR$\app\lcd</state>
+                    <state>$PROJ_DIR$\app\spi</state>
+                    <state>$PROJ_DIR$\app\sys</state>
+                    <state>$PROJ_DIR$\app\uart</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -2129,95 +2131,80 @@
         </settings>
     </configuration>
     <group>
+        <name>app</name>
+        <group>
+            <name>inc</name>
+            <file>
+                <name>$PROJ_DIR$\app\board\board.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\app\lcd\commands.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\app\lcd\glcdfont.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\app\lcd\lcd.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\app\spi\spi.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\app\sys\sys.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\app\uart\uart.h</name>
+            </file>
+        </group>
+        <group>
+            <name>src</name>
+            <file>
+                <name>$PROJ_DIR$\app\board\board.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\app\lcd\lcd.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\app\spi\spi.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\app\sys\sys.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\app\uart\uart.c</name>
+            </file>
+        </group>
+    </group>
+    <group>
         <name>lib</name>
-        <group>
-            <name>hdr</name>
-            <file>
-                <name>$PROJ_DIR$\lib\ILI9341\commands.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\lib\ILI9341\config.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\lib\ILI9341\control.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\lib\ILI9341\core.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\lib\ILI9341\delay.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\lib\ILI9341\dma.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\lib\encoder\encoder.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\lib\ILI9341\fonts\glcdfont.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\lib\ILI9341\graph.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\lib\tinystd\itoa.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\lib\ILI9341\text.h</name>
-            </file>
-        </group>
-        <group>
-            <name>Src</name>
-            <file>
-                <name>$PROJ_DIR$\lib\ILI9341\core.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\lib\ILI9341\delay.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\lib\ILI9341\dma.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\lib\encoder\encoder.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\lib\ILI9341\graph.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\lib\tinystd\itoa.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\lib\ILI9341\text.c</name>
-            </file>
-        </group>
     </group>
     <group>
         <name>stm</name>
         <group>
             <name>src</name>
             <file>
-                <name>$PROJ_DIR$\lib\periph\STM32F4xx_StdPeriph_Driver\src\misc.c</name>
+                <name>$PROJ_DIR$\lib\STM32F4xx\STM32F4xx_StdPeriph_Driver\src\misc.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\lib\periph\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c</name>
+                <name>$PROJ_DIR$\lib\STM32F4xx\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\lib\periph\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_gpio.c</name>
+                <name>$PROJ_DIR$\lib\STM32F4xx\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_gpio.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\lib\periph\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_rcc.c</name>
+                <name>$PROJ_DIR$\lib\STM32F4xx\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_rcc.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\lib\periph\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_spi.c</name>
+                <name>$PROJ_DIR$\lib\STM32F4xx\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_spi.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\lib\periph\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_syscfg.c</name>
+                <name>$PROJ_DIR$\lib\STM32F4xx\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_syscfg.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\lib\periph\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_tim.c</name>
+                <name>$PROJ_DIR$\lib\STM32F4xx\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_tim.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\lib\periph\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_usart.c</name>
+                <name>$PROJ_DIR$\lib\STM32F4xx\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_usart.c</name>
             </file>
         </group>
     </group>
@@ -2225,12 +2212,12 @@
         <name>$PROJ_DIR$\main.c</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\lib\periph\CMSIS\Device\ST\STM32F4xx\Source\Templates\iar\startup_stm32f40_41xxx.s</name>
+        <name>$PROJ_DIR$\lib\STM32F4xx\CMSIS\Device\ST\STM32F4xx\Source\Templates\iar\startup_stm32f40_41xxx.s</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\lib\periph\stm32f4xx_conf.h</name>
+        <name>$PROJ_DIR$\lib\STM32F4xx\stm32f4xx_conf.h</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\lib\periph\CMSIS\Device\ST\STM32F4xx\Source\Templates\system_stm32f4xx.c</name>
+        <name>$PROJ_DIR$\lib\STM32F4xx\CMSIS\Device\ST\STM32F4xx\Source\Templates\system_stm32f4xx.c</name>
     </file>
 </project>
