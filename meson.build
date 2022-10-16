@@ -3,35 +3,37 @@ project('den', 'c',
 
 # Includes and sources
 inc = [
-      include_directories('lib/tinystd')
-    , include_directories('lib/ILI9341')
-    , include_directories('lib/encoder')
-    , include_directories('lib/usart')
-    , include_directories('lib/periph/')
-    , include_directories('lib/periph/CMSIS/Device/ST/STM32F4xx/')
-    , include_directories('lib/periph/CMSIS/Device/ST/STM32F4xx/Include/')
-    , include_directories('lib/periph/CMSIS/Include/')
-    , include_directories('lib/periph/STM32F4xx_StdPeriph_Driver/inc/')
-    , include_directories('lib/periph/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm')
+      include_directories('app')
+    , include_directories('app/board')
+    , include_directories('app/lcd')
+    , include_directories('app/spi')
+    , include_directories('app/sys')
+    , include_directories('app/uart')
+    , include_directories('lib/tinystd')
+    , include_directories('lib/STM32F4xx/')
+    , include_directories('lib/STM32F4xx/CMSIS/Device/ST/STM32F4xx/')
+    , include_directories('lib/STM32F4xx/CMSIS/Device/ST/STM32F4xx/Include/')
+    , include_directories('lib/STM32F4xx/CMSIS/Include/')
+    , include_directories('lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/inc/')
+    , include_directories('lib/STM32F4xx/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm')
 ]
 
 src = [
       'main.c'
-    , 'lib/periph/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c'
-    , 'lib/periph/CMSIS/Device/ST/STM32F4xx/Source/Templates/SW4STM32/startup_stm32f40xx.s'
-    , 'lib/periph/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rcc.c'
-    , 'lib/periph/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_tim.c'
-    , 'lib/periph/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_gpio.c'
-    , 'lib/periph/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.c'
-    , 'lib/periph/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dma.c'
-    , 'lib/periph/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_usart.c'
-    , 'lib/tinystd/itoa.c'
-    , 'lib/ILI9341/delay.c'
-    , 'lib/ILI9341/core.c'
-    , 'lib/ILI9341/dma.c'
-    , 'lib/ILI9341/graph.c'
-    , 'lib/ILI9341/text.c'
-    , 'lib/encoder/encoder.c'
+    , 'lib/STM32F4xx/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c'
+    , 'startup_stm32f407xx.s'
+    , 'lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rcc.c'
+    , 'lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_tim.c'
+    , 'lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_gpio.c'
+    , 'lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.c'
+    , 'lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dma.c'
+    , 'lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_usart.c'
+    # , 'lib/tinystd/itoa.c'
+    , 'app/sys/sys.c'
+    # , 'app/uart/uart.c'
+    , 'app/board/board.c'
+    , 'app/spi/spi.c'
+    , 'app/lcd/lcd.c'
 ]
 
 # Dependencies
@@ -45,9 +47,17 @@ main = executable(
     sources : src,
     include_directories : inc,
     name_suffix : 'elf',
-    c_args: ['-DSTM32F40_41xxx', '-DUSE_STDPERIPH_DRIVER', '-DHSE_VALUE=8000000', '--specs=nano.specs', '--specs=nosys.specs', '-fno-common', '-fno-builtin', '-nostdlib', '-ffreestanding', '-pedantic', '-std=c99', '-Wall'],
+    c_args: ['-DSTM32F40_41xxx'
+        , '-DSTM32F407xx'
+        , '-DUSE_STDPERIPH_DRIVER'
+        , '-DHSE_VALUE=8000000'
+        , '-Wall'
+        , '-fdata-sections'
+        , '-ffunction-sections'
+    ],
     # link_args removed : '-Wl,--gc-sections', , '--specs=nosys.specs'
-    link_args : [ '-T../STM32F407VG_FLASH_BL.ld', '--specs=nano.specs', '-nodefaultlibs']
+    link_args : ['-T../STM32F407VGTx_FLASH.ld'
+        , '-nodefaultlibs']
     # dependencies : deps
 )
 

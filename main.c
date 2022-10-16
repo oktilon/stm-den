@@ -1,6 +1,6 @@
 #include "board.h"
 
-void _init(void) {;}
+// void _init(void) {;}
 
 int main(void) {
     init_hardware();
