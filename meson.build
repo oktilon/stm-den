@@ -19,21 +19,21 @@ inc = [
 ]
 
 src = [
-      'main.c'
-    , 'lib/STM32F4xx/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c'
+      'app/main.c'
+    # , 'lib/tinystd/itoa.c'
+    , 'app/sys/sys.c'
+    , 'app/uart/uart.c'
+    , 'app/board/board.c'
+    , 'app/spi/spi.c'
+    , 'app/lcd/lcd.c'
     , 'startup_stm32f407xx.s'
+    , 'lib/STM32F4xx/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c'
     , 'lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rcc.c'
     , 'lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_tim.c'
     , 'lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_gpio.c'
     , 'lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.c'
     , 'lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dma.c'
     , 'lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_usart.c'
-    # , 'lib/tinystd/itoa.c'
-    , 'app/sys/sys.c'
-    # , 'app/uart/uart.c'
-    , 'app/board/board.c'
-    , 'app/spi/spi.c'
-    , 'app/lcd/lcd.c'
 ]
 
 # Dependencies

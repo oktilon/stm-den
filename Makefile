@@ -36,7 +36,7 @@ BUILD_DIR = build
 ######################################
 # C sources
 C_SOURCES =  \
-main.c \
+app/main.c \
 app/sys/sys.c \
 app/board/board.c \
 app/spi/spi.c \

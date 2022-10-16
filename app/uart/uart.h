@@ -1,6 +1,7 @@
 #ifndef __UART_H
 #define __UART_H
 
+#include "stm32f4xx.h"
 #include "stm32f4xx_gpio.h"
 #include "stm32f4xx_usart.h"
 
@@ -18,6 +19,9 @@
 #define ESP_UART_IRQ_Handler  UART4_IRQHandler
 
 void UART_init(void);
+int UART_SendByte(u8 c);
+int UART_GetByte(void);
+u16 UART_GetDataSize(void);
 
 void ESP_UART_IRQ_Handler(void);
 

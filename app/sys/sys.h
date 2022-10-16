@@ -53,6 +53,7 @@
 #define PIout(n)   BIT_ADDR(GPIOI_ODR_Addr,n)
 #define PIin(n)    BIT_ADDR(GPIOI_IDR_Addr,n)
 
+extern uint32_t upTime;
 
 void delay_ms(uint32_t time);
 

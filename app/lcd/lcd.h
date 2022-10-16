@@ -25,17 +25,17 @@ extern u16  POINT_COLOR;
 extern u16  BACK_COLOR;
 
 //======== LCD PINs =======
-#define LED  7
-#define CS   8
-#define RS   11
-#define RST  12
+#define LED  0
+#define RST  2
+#define RS   3
+#define CS   4
 
-#define LCD_CTRL_GPIO   GPIOB
-#define LCD_CTRL_PINS   GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_11 | GPIO_Pin_12
-#define LCD_LED_SRC     GPIO_PinSource7
-#define LCD_CS_SRC      GPIO_PinSource8
-#define LCD_RS_SRC      GPIO_PinSource11
-#define LCD_RST_SRC     GPIO_PinSource12
+#define LCD_CTRL_GPIO   GPIOA
+#define LCD_CTRL_PINS   GPIO_Pin_0 | GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4
+#define LCD_LED_SRC     GPIO_PinSource0
+#define LCD_CS_SRC      GPIO_PinSource2
+#define LCD_RS_SRC      GPIO_PinSource3
+#define LCD_RST_SRC     GPIO_PinSource4
 
 #define LCD_SPI_GPIO    GPIOA
 #define LCD_SPI_PINS    GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7
@@ -43,10 +43,10 @@ extern u16  BACK_COLOR;
 #define LCD_MISO_SRC    GPIO_PinSource6
 #define LCD_MOSI_SRC    GPIO_PinSource7
 
-#define LCD_LED PBout(LED)
-#define LCD_CS  PBout(CS)
-#define LCD_RS  PBout(RS)
-#define LCD_RST PBout(RST)
+#define LCD_LED PAout(LED)
+#define LCD_CS  PAout(CS)
+#define LCD_RS  PAout(RS)
+#define LCD_RST PAout(RST)
 //=========================
 
 #define LCD_SPI       SPI1

@@ -1,18 +1,18 @@
 #include "sys.h"
 
 volatile u32 tick = 0;
+uint32_t upTime = 0;
 
 
 void SysTick_Handler(void) {
     tick++;
+    upTime++;
 }
 
 static inline void delay(uint32_t time) {
     tick = 0;
-    int8_t tmp = 1;
 
     do {
-        tmp = -tmp;
         __asm("NOP");
     } while (tick < time);
 

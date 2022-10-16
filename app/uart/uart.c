@@ -1,5 +1,31 @@
 #include "uart.h"
 
+#define RBUF_SIZE   256     /*** Must be a power of 2 (2,4,8,16,32,64,128,256,512,...) ***/
+#define TBUF_SIZE   256     /*** Must be a power of 2 (2,4,8,16,32,64,128,256,512,...) ***/
+
+struct buf_st {
+    u16 in;                 // Next In Index
+    u16 out;                // Next Out Index
+    u8 buf [RBUF_SIZE];     // Buffer
+};
+
+static struct buf_st rbuf = { 0, 0, };
+#define SIO_RBUFLEN ((u16)(rbuf.in - rbuf.out))
+
+static struct buf_st tbuf = { 0, 0, };
+#define SIO_TBUFLEN ((u16)(tbuf.in - tbuf.out))
+
+static unsigned int tx_restart = 1;     // NZ if TX restart is required
+
+static void buffer_Init (void) {
+    tbuf.in = 0;
+    tbuf.out = 0;
+    tx_restart = 1;
+
+    rbuf.in = 0;
+    rbuf.out = 0;
+}
+
 static void Uart_Gpio_init() {
     GPIO_InitTypeDef gpioStructure;
 
@@ -39,10 +65,77 @@ static void Uart_main_init() {
 }
 
 void UART_init(void) {
+    buffer_Init();
     Uart_Gpio_init();
     Uart_main_init();
 }
 
 void ESP_UART_IRQ_Handler(void) {
-    __NOP();
+    volatile unsigned int IIR;
+    struct buf_st *p;
+
+    IIR = USART1->SR;
+    if (IIR & USART_FLAG_RXNE) {                  // read interrupt
+        USART1->SR &= ~USART_FLAG_RXNE;	          // clear interrupt
+
+        p = &rbuf;
+
+        if (((p->in - p->out) & ~(RBUF_SIZE-1)) == 0) {
+            p->buf [p->in & (RBUF_SIZE-1)] = (USART1->DR & 0x1FF);
+            p->in++;
+        }
+    }
+
+    if (IIR & USART_FLAG_TXE) {
+        USART1->SR &= ~USART_FLAG_TXE;	          // clear interrupt
+
+        p = &tbuf;
+
+        if (p->in != p->out) {
+            USART1->DR = (p->buf [p->out & (TBUF_SIZE-1)] & 0x1FF);
+            p->out++;
+            tx_restart = 0;
+        } else {
+            tx_restart = 1;
+            USART1->CR1 &= ~USART_FLAG_TXE;		      // disable TX interrupt if nothing to send
+        }
+    }
+}
+
+int UART_SendByte(u8 c) {
+  struct buf_st *p = &tbuf;
+
+    // If the buffer is full, return an error value
+    if (SIO_TBUFLEN >= TBUF_SIZE)
+        return (-1);
+
+    // Add data to the transmit buffer.
+    p->buf [p->in & (TBUF_SIZE - 1)] = c;
+    p->in++;
+
+    // If transmit interrupt is disabled, enable it
+    if (tx_restart) {
+        tx_restart = 0;
+        // enable TX interrupt
+        USART1->CR1 |= USART_FLAG_TXE;
+    }
+
+    return (0);
+}
+
+/*------------------------------------------------------------------------------
+  GetKey
+  receive a character
+ *------------------------------------------------------------------------------*/
+int UART_GetByte(void) {
+    struct buf_st *p = &rbuf;
+
+    if (SIO_RBUFLEN == 0)
+        return (-1);
+
+    return (p->buf [(p->out++) & (RBUF_SIZE - 1)]);
+}
+
+u16 UART_GetDataSize(void) {
+    return SIO_RBUFLEN;
 }

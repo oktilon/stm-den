@@ -56,6 +56,6 @@ void init_hardware(void) {
     systick_init();
 
     Board_init();
-    //UART_init();
+    UART_init();
     LCD_Init();
 }

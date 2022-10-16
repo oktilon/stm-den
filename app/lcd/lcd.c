@@ -155,6 +155,97 @@ void LCD_Clear(u16 Color)
     LCD_CS_SET;
 }
 
+/*******************************************************************
+ * @name       :void LCD_Fill(u16 sx,u16 sy,u16 ex,u16 ey,u16 color)
+ * @date       :2018-08-09
+ * @function   :fill the specified area
+ * @parameters :sx:the bebinning x coordinate of the specified area
+                sy:the bebinning y coordinate of the specified area
+								ex:the ending x coordinate of the specified area
+								ey:the ending y coordinate of the specified area
+								color:the filled color value
+ * @retvalue   :None
+********************************************************************/
+void LCD_Fill(u16 sx,u16 sy,u16 ex,u16 ey,u16 color) {
+	u16 i, j;
+	u16 width  = ex - sx + 1;
+	u16 height = ey - sy + 1;
+	LCD_SetWindows(sx, sy, ex, ey);
+	for(i = 0; i < height; i++) {
+		for(j = 0; j < width; j++) {
+		    Lcd_WriteData_16Bit(color);
+        }
+	}
+	LCD_SetWindows(0, 0, lcddev.width - 1, lcddev.height - 1);
+}
+
+/*******************************************************************
+ * @name       :void LCD_DrawLine(u16 x1, u16 y1, u16 x2, u16 y2)
+ * @date       :2018-08-09
+ * @function   :Draw a line between two points
+ * @parameters :x1:the beginning x coordinate of the line
+                y1:the beginning y coordinate of the line
+                x2:the ending x coordinate of the line
+                y2:the ending y coordinate of the line
+ * @retvalue   :None
+********************************************************************/
+void LCD_DrawLine(u16 x1, u16 y1, u16 x2, u16 y2)
+{
+	u16 t;
+	int xerr = 0,
+        yerr = 0,
+        delta_x,
+        delta_y,
+        distance;
+	int incx,
+        incy,
+        uRow,
+        uCol;
+
+	delta_x = x2 - x1;
+	delta_y = y2 - y1;
+	uRow = x1;
+	uCol = y1;
+
+    if( delta_x > 0 ) {
+        incx=1;
+    } else if( delta_x == 0 ) {
+        incx=0;
+    } else {
+        incx =- 1;
+        delta_x =- delta_x;
+    }
+
+    if( delta_y > 0 ) {
+        incy = 1;
+    } else if( delta_y == 0 ) {
+        incy = 0;
+    } else {
+        incy =- 1;
+        delta_y =- delta_y;
+    }
+
+    if( delta_x > delta_y ) {
+        distance = delta_x;
+    } else {
+        distance = delta_y;
+    }
+
+    for( t = 0; t <= distance + 1; t++ ) {
+		LCD_DrawPoint(uRow, uCol);
+		xerr += delta_x;
+		yerr += delta_y;
+		if( xerr > distance ) {
+			xerr -= distance;
+			uRow += incx;
+		}
+		if( yerr > distance ) {
+			yerr -= distance;
+			uCol += incy;
+		}
+	}
+}
+
 /*****************************************************************************
  * @name       :void LCD_Clear(u16 Color)
  * @date       :2018-08-09
@@ -334,15 +425,15 @@ void LCD_Init(void)
     LCD_GPIOInit();
     SPI_Initialize(LCD_SPI);
     //    SPI_SetSpeed(SPI1,SPI_BaudRatePrescaler_2);
-    /*
+
     LCD_RESET();
     LCD_configure();
 
     LCD_exitStandby();
 
     LCD_direction(USE_HORIZONTAL);
-    LCD_LED = 1;
-    LCD_Clear(BLACK);*/
+    LCD_LED_SET;
+    LCD_Clear(BLACK);
 }
 
 /*****************************************************************************
@@ -369,7 +460,7 @@ void LCD_SetWindows(u16 xStar, u16 yStar, u16 xEnd, u16 yEnd)
     LCD_WR_DATA(yEnd >> 8);
     LCD_WR_DATA(0x00FF & yEnd);
 
-    LCD_WriteRAM_Prepare(); //��ʼд��GRAM
+    LCD_WriteRAM_Prepare();
 }
 
 /*****************************************************************************
@@ -389,10 +480,10 @@ void LCD_SetCursor(u16 Xpos, u16 Ypos)
  * @name       :void LCD_direction(u8 direction)
  * @date       :2018-08-09
  * @function   :Setting the display direction of LCD screen
- * @parameters :direction:0-0 degree
-                          1-90 degree
-                                                    2-180 degree
-                                                    3-270 degree
+ * @parameters :direction:0 = 0 degree
+                          1 = 90 degree
+                          2 = 180 degree
+                          3 = 270 degree
  * @retvalue   :None
 ******************************************************************************/
 void LCD_direction(u8 direction)
