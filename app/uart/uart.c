@@ -74,30 +74,30 @@ void ESP_UART_IRQ_Handler(void) {
     volatile unsigned int IIR;
     struct buf_st *p;
 
-    IIR = USART1->SR;
+    IIR = ESP_UART->SR;
     if (IIR & USART_FLAG_RXNE) {                  // read interrupt
-        USART1->SR &= ~USART_FLAG_RXNE;	          // clear interrupt
+        ESP_UART->SR &= ~USART_FLAG_RXNE;	          // clear interrupt
 
         p = &rbuf;
 
         if (((p->in - p->out) & ~(RBUF_SIZE-1)) == 0) {
-            p->buf [p->in & (RBUF_SIZE-1)] = (USART1->DR & 0x1FF);
+            p->buf [p->in & (RBUF_SIZE-1)] = (ESP_UART->DR & 0x1FF);
             p->in++;
         }
     }
 
     if (IIR & USART_FLAG_TXE) {
-        USART1->SR &= ~USART_FLAG_TXE;	          // clear interrupt
+        ESP_UART->SR &= ~USART_FLAG_TXE;	          // clear interrupt
 
         p = &tbuf;
 
         if (p->in != p->out) {
-            USART1->DR = (p->buf [p->out & (TBUF_SIZE-1)] & 0x1FF);
+            ESP_UART->DR = (p->buf [p->out & (TBUF_SIZE-1)] & 0x1FF);
             p->out++;
             tx_restart = 0;
         } else {
             tx_restart = 1;
-            USART1->CR1 &= ~USART_FLAG_TXE;		      // disable TX interrupt if nothing to send
+            ESP_UART->CR1 &= ~USART_FLAG_TXE;		      // disable TX interrupt if nothing to send
         }
     }
 }
@@ -117,7 +117,7 @@ int UART_SendByte(u8 c) {
     if (tx_restart) {
         tx_restart = 0;
         // enable TX interrupt
-        USART1->CR1 |= USART_FLAG_TXE;
+        ESP_UART->CR1 |= USART_FLAG_TXE;
     }
 
     return (0);

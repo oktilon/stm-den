@@ -17,7 +17,6 @@ typedef struct
 //LCD Device strust
 extern _lcd_dev lcddev;
 
-#define USE_HORIZONTAL       0
 #define LCD_W 240
 #define LCD_H 320
 
@@ -94,6 +93,7 @@ void LCD_SetCursor(u16 Xpos, u16 Ypos);
 void LCD_DrawPoint(u16 x,u16 y);
 u16  LCD_ReadPoint(u16 x,u16 y);
 void LCD_DrawLine(u16 x1, u16 y1, u16 x2, u16 y2);
+void LCD_Fill(u16 sx,u16 sy,u16 ex,u16 ey,u16 color);
 void LCD_DrawRectangle(u16 x1, u16 y1, u16 x2, u16 y2);
 void LCD_SetWindows(u16 xStar, u16 yStar,u16 xEnd,u16 yEnd);
 

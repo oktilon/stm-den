@@ -67,7 +67,7 @@ u16 arrowColor = YELLOW;
 
 static void drawTime(void) {
     static int oldSec = 0;
-    int sec = (upTime / 100) % 60;
+    int sec = (upTime / 1000) % 60;
 
     if(sec == oldSec) return;
 
@@ -89,10 +89,13 @@ int main(void) {
 
     u8 buf[8] = { 0, 0, 0, 0, 0 };
     u8 on = 0;
+    
+    LCD_Fill(1, 1, 10, 10, BLUE);
+    LCD_Fill(30, 1, 40, 10, BLUE);
 
-    UART_SendByte(0x33);
-    UART_SendByte(0x34);
-    UART_SendByte(0x35);
+    // UART_SendByte(0x33);
+    // UART_SendByte(0x34);
+    // UART_SendByte(0x35);
 
     while (1) {
         drawTime();
@@ -109,9 +112,13 @@ int main(void) {
         }
         if (UART_GetDataSize() >= 4) {
             buf[0] = UART_GetByte();
+            __asm("NOP");
             buf[1] = UART_GetByte();
+            __asm("NOP");
             buf[2] = UART_GetByte();
+            __asm("NOP");
             buf[3] = UART_GetByte();
+            __asm("NOP");
             if(buf[0] == 0xAA && buf[1] == 0x55 && buf[3] == 0x55) {
                 if(buf[2] == 0x01) {
                     PDout(12) = 1;

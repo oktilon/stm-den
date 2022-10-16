@@ -431,7 +431,7 @@ void LCD_Init(void)
 
     LCD_exitStandby();
 
-    LCD_direction(USE_HORIZONTAL);
+    LCD_direction(2);
     LCD_LED_SET;
     LCD_Clear(BLACK);
 }
@@ -497,22 +497,22 @@ void LCD_direction(u8 direction)
     case 0:
         lcddev.width = LCD_W;
         lcddev.height = LCD_H;
-        LCD_WriteReg(LCD_MAC, (1 << 3) | (0 << 6) | (0 << 7)); // BGR==1,MY==0,MX==0,MV==0
+        LCD_WriteReg(LCD_MAC, (1 << 3) | (0 << 5) | (0 << 6) | (0 << 7)); // BGR==1, MV==0, MX==0, MY==0
         break;
     case 1:
         lcddev.width = LCD_H;
         lcddev.height = LCD_W;
-        LCD_WriteReg(LCD_MAC, (1 << 3) | (0 << 7) | (1 << 6) | (1 << 5)); // BGR==1,MY==1,MX==0,MV==1
+        LCD_WriteReg(LCD_MAC, (1 << 3) | (1 << 5) | (0 << 6) | (1 << 7)); // BGR==1, MV==1, MX==0, MY==1
         break;
     case 2:
         lcddev.width = LCD_W;
         lcddev.height = LCD_H;
-        LCD_WriteReg(LCD_MAC, (1 << 3) | (1 << 6) | (1 << 7)); // BGR==1,MY==0,MX==0,MV==0
+        LCD_WriteReg(LCD_MAC, (1 << 3) | (0 << 5) | (0 << 6) | (1 << 7)); // BGR==1, MV==0, MX==0, MY==1
         break;
     case 3:
         lcddev.width = LCD_H;
         lcddev.height = LCD_W;
-        LCD_WriteReg(LCD_MAC, (1 << 3) | (1 << 7) | (1 << 5)); // BGR==1,MY==1,MX==0,MV==1
+        LCD_WriteReg(LCD_MAC, (1 << 3) | (1 << 5) | (0 << 6) | (1 << 7)); // BGR==1, MV==1, MX==0, MY==1
         break;
     default:
         break;
