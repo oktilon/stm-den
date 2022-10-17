@@ -2,6 +2,7 @@
 #include "sys.h"
 #include "spi.h"
 #include "commands.h"
+#include "font.h"
 
 static const uint8_t init_commands[] = {
     // Power control A
@@ -517,4 +518,61 @@ void LCD_direction(u8 direction)
     default:
         break;
     }
+}
+
+void LCD_PutChar(u16 x, u16 y, u16 fc, u16 bc, char ch, u8 size, u8 mode) {
+    u8 temp;
+    u8 pos, t;
+    u16 colortemp = POINT_COLOR;
+
+    u8 num = ch - ' ';
+    LCD_SetWindows(x, y, x + size / 2 - 1, y + size - 1);
+    if( !mode ) {
+        for( pos = 0; pos < size; pos++) {
+            if( size == 12 ) {
+                temp = asc2_1206[num][pos];   // 12x6
+            } else {
+                temp = asc2_1608[num][pos];   // 16x8
+            }
+
+            for( t = 0; t < size / 2; t++) {
+                if( temp & 0x01) {
+                    Lcd_WriteData_16Bit(fc);
+                } else {
+                    Lcd_WriteData_16Bit(bc);
+                }
+                temp >>= 1;
+            }
+        }
+    } else {
+        for( pos = 0; pos < size; pos++) {
+            if( size == 12 ) {
+                temp = asc2_1206[num][pos];
+            } else {
+                temp = asc2_1608[num][pos];
+            }
+
+            for( t = 0; t < size / 2; t++) {
+                POINT_COLOR = fc;
+                if( temp & 0x01) {
+                    LCD_DrawPoint(x + t, y + pos);
+                }
+                temp >>= 1;
+            }
+        }
+    }
+    POINT_COLOR = colortemp;
+    LCD_SetWindows(0, 0, lcddev.width-1, lcddev.height-1);
+}
+
+u16 LCD_PrintString(u16 x, u16 y, u8 size, char *p, u8 mode) {
+    while((*p<='~')&&(*p>=' ')) {
+        if( x > (lcddev.width - 1) || y > (lcddev.height-1) ) {
+            return x;
+        }
+        LCD_PutChar(x, y, POINT_COLOR, BACK_COLOR, *p, size, mode);
+        x += size/2;
+        p++;
+    }
+    return x;
 }

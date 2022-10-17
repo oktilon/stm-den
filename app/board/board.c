@@ -28,6 +28,8 @@ static void system_clock_init(void) {
     //================== APB1 =================================
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE);
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C2, ENABLE);
 
     //================== APB2 =================================
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
@@ -58,4 +60,5 @@ void init_hardware(void) {
     Board_init();
     UART_init();
     LCD_Init();
+    // DS1307_init();
 }

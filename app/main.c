@@ -89,9 +89,15 @@ int main(void) {
 
     u8 buf[8] = { 0, 0, 0, 0, 0 };
     u8 on = 0;
-    
+
     LCD_Fill(1, 1, 10, 10, BLUE);
     LCD_Fill(30, 1, 40, 10, BLUE);
+
+    BACK_COLOR = BLACK;
+    POINT_COLOR = RED;
+    u16 x = LCD_PrintString(2, 15, 12, "Size=12x6", 0);
+    POINT_COLOR = BRRED;
+    LCD_PrintString(x + 5, 15, 16, "Size=16x8", 0);
 
     // UART_SendByte(0x33);
     // UART_SendByte(0x34);

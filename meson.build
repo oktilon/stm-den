@@ -7,8 +7,10 @@ inc = [
     , include_directories('app/board')
     , include_directories('app/lcd')
     , include_directories('app/spi')
+    , include_directories('app/i2c')
     , include_directories('app/sys')
     , include_directories('app/uart')
+    , include_directories('app/ds1307')
     , include_directories('lib/tinystd')
     , include_directories('lib/STM32F4xx/')
     , include_directories('lib/STM32F4xx/CMSIS/Device/ST/STM32F4xx/')
@@ -21,11 +23,13 @@ inc = [
 src = [
       'app/main.c'
     # , 'lib/tinystd/itoa.c'
+    , 'app/ds1307/ds1307.c'
     , 'app/sys/sys.c'
     , 'app/uart/uart.c'
     , 'app/board/board.c'
     , 'app/spi/spi.c'
     , 'app/lcd/lcd.c'
+    , 'app/i2c/i2c.c'
     , 'startup_stm32f407xx.s'
     , 'lib/STM32F4xx/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c'
     , 'lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rcc.c'
@@ -34,6 +38,7 @@ src = [
     , 'lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.c'
     , 'lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dma.c'
     , 'lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_usart.c'
+    , 'lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_i2c.c'
 ]
 
 # Dependencies

@@ -108,6 +108,8 @@ u16 LCD_BGR2RGB(u16 c);
 void LCD_SetParam(void);
 void Lcd_WriteData_16Bit(u16 Data);
 void LCD_direction(u8 direction );
+void LCD_PutChar(u16 x, u16 y, u16 fc, u16 bc, char ch, u8 size, u8 mode);
+u16 LCD_PrintString(u16 x, u16 y, u8 size, char *p, u8 mode);
 
 
 /*

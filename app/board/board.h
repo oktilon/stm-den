@@ -7,6 +7,7 @@
 #include "spi.h"
 #include "lcd.h"
 #include "uart.h"
+#include "ds1307.h"
 
 extern RCC_ClocksTypeDef RCC_Clocks;
 
