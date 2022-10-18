@@ -11,6 +11,7 @@ inc = [
     , include_directories('app/sys')
     , include_directories('app/uart')
     , include_directories('app/ds1307')
+    , include_directories('app/bme280')
     , include_directories('lib/tinystd')
     , include_directories('lib/STM32F4xx/')
     , include_directories('lib/STM32F4xx/CMSIS/Device/ST/STM32F4xx/')
@@ -24,6 +25,7 @@ src = [
       'app/main.c'
     # , 'lib/tinystd/itoa.c'
     , 'app/ds1307/ds1307.c'
+    , 'app/bme280/bme280.c'
     , 'app/sys/sys.c'
     , 'app/uart/uart.c'
     , 'app/board/board.c'

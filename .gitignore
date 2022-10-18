@@ -1,7 +1,9 @@
 # Created by .ignore support plugin (hsz.mobi)
 build
+builddir
 .vscode-ctags
 .vscode/.cortex-debug.registers.state.json
+.vscode/.cortex-debug.peripherals.state.json
 Debug
 settings
 stm-den.dep

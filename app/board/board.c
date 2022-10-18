@@ -19,7 +19,7 @@ static void system_clock_init(void) {
     //================== AHB1 =================================
     //------------- GPIO --------------------------------------
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE); // SPI1 pin's
-    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE); // SPI2 pin's
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE); // I2C1, I2C2 pin's
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE); // UART4, SPI2 pin's
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE); // LED pin's
     //-------------- DMA --------------------------------------
@@ -60,5 +60,6 @@ void init_hardware(void) {
     Board_init();
     UART_init();
     LCD_Init();
+    BME280_init();
     DS1307_init();
 }

@@ -1,31 +1,16 @@
 #include "ds1307.h"
 
 static void DS1307_WriteReg(u8 reg, u8 data) {
-    I2C_Write(DS_I2C, DS1307_ADDR, reg, data);
+    I2C_Write(DS1307_I2C, DS1307_ADDR, reg, data);
 }
 
 static u8 DS1307_ReadReg(u8 reg) {
-    return I2C_Read(DS_I2C, DS1307_ADDR, reg);
+    return I2C_Read(DS1307_I2C, DS1307_ADDR, reg);
 }
 
 void DS1307_init(void) {
-    GPIO_InitTypeDef GPIO_InitStructure;
-
-
-    GPIO_InitStructure.GPIO_Pin   = DS_SCL_PIN | DS_SDA_PIN;
-    GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
-    GPIO_Init(DS_I2C_GPIO, &GPIO_InitStructure);
-
-    GPIO_PinAFConfig(DS_I2C_GPIO, DS_SCL_SRC, GPIO_AF_I2C1);
-    GPIO_PinAFConfig(DS_I2C_GPIO, DS_SDA_SRC, GPIO_AF_I2C1);
-
-
-    I2C_Initialize(DS_I2C, 10000, 0x00, I2C_Ack_Enable, I2C_AcknowledgedAddress_7bit);
-
-    delay_ms(100);
+    I2C_GPIO_Initialize(DS1307_I2C_GPIO, DS1307_SCL_PIN, DS1307_SDA_PIN);
+    I2C_Initialize(DS1307_I2C, 100000, 0x00, I2C_Ack_Enable, I2C_AcknowledgedAddress_7bit);
 
     // DS1307_WriteReg(DS1307_CTRL, 0x00);
 }

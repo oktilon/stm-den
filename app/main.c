@@ -87,6 +87,8 @@ static void drawTime(void) {
 int main(void) {
     init_hardware();
 
+    u8 id = BME280_GetChipId();
+
     u8 buf[8] = { 0, 0, 0, 0, 0 };
     u8 on = 0;
 
