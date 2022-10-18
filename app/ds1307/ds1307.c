@@ -10,7 +10,7 @@ static u8 DS1307_ReadReg(u8 reg) {
 
 void DS1307_init(void) {
     GPIO_InitTypeDef GPIO_InitStructure;
-    I2C_InitTypeDef I2C_InitStruct;
+
 
     GPIO_InitStructure.GPIO_Pin   = DS_SCL_PIN | DS_SDA_PIN;
     GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
@@ -19,24 +19,15 @@ void DS1307_init(void) {
     GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
     GPIO_Init(DS_I2C_GPIO, &GPIO_InitStructure);
 
-    GPIO_PinAFConfig(DS_I2C_GPIO, DS_SCL_PIN, GPIO_AF_I2C1);
-    GPIO_PinAFConfig(DS_I2C_GPIO, DS_SDA_PIN, GPIO_AF_I2C1);
+    GPIO_PinAFConfig(DS_I2C_GPIO, DS_SCL_SRC, GPIO_AF_I2C1);
+    GPIO_PinAFConfig(DS_I2C_GPIO, DS_SDA_SRC, GPIO_AF_I2C1);
 
-    I2C_DeInit(DS_I2C);
 
-    I2C_InitStruct.I2C_Mode        = I2C_Mode_I2C;
-    I2C_InitStruct.I2C_ClockSpeed  = 100000;
-    I2C_InitStruct.I2C_DutyCycle   = I2C_DutyCycle_2; // Only for Fast mode ClockSpeed = 400000
-    I2C_InitStruct.I2C_OwnAddress1 = 0x00;
-    I2C_InitStruct.I2C_Ack         = I2C_Ack_Enable;
-    I2C_InitStruct.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
-    I2C_Init(DS_I2C, &I2C_InitStruct);
-
-    I2C_Cmd(DS_I2C, ENABLE);
+    I2C_Initialize(DS_I2C, 10000, 0x00, I2C_Ack_Enable, I2C_AcknowledgedAddress_7bit);
 
     delay_ms(100);
 
-    DS1307_WriteReg(DS1307_CTRL, 0x00);
+    // DS1307_WriteReg(DS1307_CTRL, 0x00);
 }
 
 u8 bcd2dec(u8 bcd) {

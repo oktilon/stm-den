@@ -347,6 +347,8 @@
                     <state>$PROJ_DIR$\app\spi</state>
                     <state>$PROJ_DIR$\app\sys</state>
                     <state>$PROJ_DIR$\app\uart</state>
+                    <state>$PROJ_DIR$\app\i2c</state>
+                    <state>$PROJ_DIR$\app\ds1307</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -2141,7 +2143,13 @@
                 <name>$PROJ_DIR$\app\lcd\commands.h</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\app\ds1307\ds1307.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\app\lcd\glcdfont.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\app\i2c\i2c.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\app\lcd\lcd.h</name>
@@ -2160,6 +2168,12 @@
             <name>src</name>
             <file>
                 <name>$PROJ_DIR$\app\board\board.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\app\ds1307\ds1307.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\app\i2c\i2c.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\app\lcd\lcd.c</name>
@@ -2190,6 +2204,9 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\lib\STM32F4xx\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_gpio.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\lib\STM32F4xx\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_i2c.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\lib\STM32F4xx\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_rcc.c</name>

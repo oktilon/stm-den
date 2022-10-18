@@ -60,5 +60,5 @@ void init_hardware(void) {
     Board_init();
     UART_init();
     LCD_Init();
-    // DS1307_init();
+    DS1307_init();
 }
