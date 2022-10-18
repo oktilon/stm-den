@@ -33,6 +33,7 @@ static void system_clock_init(void) {
 
     //================== APB2 =================================
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
+
 }
 
 static void systick_init(void) {

@@ -88,6 +88,7 @@ int main(void) {
     init_hardware();
 
     u8 id = BME280_GetChipId();
+    u8 yy = DS1307_GetHour();
 
     u8 buf[8] = { 0, 0, 0, 0, 0 };
     u8 on = 0;

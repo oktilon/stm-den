@@ -5,7 +5,7 @@ static void DS1307_WriteReg(u8 reg, u8 data) {
 }
 
 static u8 DS1307_ReadReg(u8 reg) {
-    return I2C_Read(DS1307_I2C, DS1307_ADDR, reg);
+    return I2C_Read2(DS1307_I2C, DS1307_ADDR, reg);
 }
 
 void DS1307_init(void) {
@@ -36,8 +36,12 @@ void DS1307_SetDateTime(u16 year, u8 month, u8 day, u8 hour, u8 min, u8 sec) {
     DS1307_WriteReg(DS1307_SEC, dec2bcd(sec));
 }
 
+u8 DS1307_GetHour(void) {
+    return bcd2dec(DS1307_ReadReg(DS1307_HOUR));
+}
+
 void DS1307_GetTime(u8 *hour, u8 *min, u8 *sec) {
-    *hour = bcd2dec(DS1307_ReadReg(DS1307_HOUR));
+    *hour = DS1307_GetHour();
     *min = bcd2dec(DS1307_ReadReg(DS1307_MIN));
     *sec = bcd2dec(DS1307_ReadReg(DS1307_SEC));
 }

@@ -3,7 +3,7 @@
 void I2C_Initialize(I2C_TypeDef *I2Cx, u32 speed, u16 addr, u16 ack, u16 ack_size) {
     I2C_InitTypeDef I2C_InitStruct;
 
-    I2C_DeInit(I2Cx);
+    // I2C_DeInit(I2Cx);
 
     I2C_InitStruct.I2C_Mode        = I2C_Mode_I2C;
     I2C_InitStruct.I2C_ClockSpeed  = speed;
@@ -22,10 +22,10 @@ void I2C_GPIO_Initialize(GPIO_TypeDef *GPIOx, u8 pinSCL, u8 pinSDA) {
     u16 gpioSDA = 1 << pinSDA;
 
     GPIO_InitStructure.GPIO_Pin   = gpioSCL | gpioSDA;
-    GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
+    GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Medium_Speed;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+    GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
     GPIO_Init(GPIOx, &GPIO_InitStructure);
 
     GPIO_PinAFConfig(GPIOx, pinSCL, I2C_AF);
