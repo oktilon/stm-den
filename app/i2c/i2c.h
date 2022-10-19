@@ -13,7 +13,4 @@ void I2C_GPIO_Initialize(GPIO_TypeDef *port, u8 pinSCL, u8 pinSDA);
 void I2C_Write(I2C_TypeDef *I2Cx, u8 chip, u8 reg, u8 data);
 u8 I2C_Read(I2C_TypeDef *I2Cx, u8 chip, u8 reg);
 
-u8 I2C_Read2(I2C_TypeDef *I2Cx, u8 chip, u8 reg);
-void I2C_Write2(I2C_TypeDef *I2Cx, u8 chip, u8 reg, u8 data);
-
 #endif //__I2C_H

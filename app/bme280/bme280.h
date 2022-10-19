@@ -37,5 +37,7 @@
 
 void BME280_init(void);
 u8 BME280_GetChipId(void);
+u8 bcd2dec(u8 bcd);
+u8 dec2bcd(u8 dec);
 
 #endif //__BME280_H

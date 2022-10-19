@@ -5,7 +5,7 @@ static void DS1307_WriteReg(u8 reg, u8 data) {
 }
 
 static u8 DS1307_ReadReg(u8 reg) {
-    return I2C_Read2(DS1307_I2C, DS1307_ADDR, reg);
+    return I2C_Read(DS1307_I2C, DS1307_ADDR, reg);
 }
 
 void DS1307_init(void) {
@@ -40,8 +40,22 @@ u8 DS1307_GetHour(void) {
     return bcd2dec(DS1307_ReadReg(DS1307_HOUR));
 }
 
+u8 DS1307_GetMinute(void) {
+    return bcd2dec(DS1307_ReadReg(DS1307_MIN));
+}
+
+u8 DS1307_GetSecond(void) {
+    return bcd2dec(DS1307_ReadReg(DS1307_SEC));
+}
+
 void DS1307_GetTime(u8 *hour, u8 *min, u8 *sec) {
     *hour = DS1307_GetHour();
-    *min = bcd2dec(DS1307_ReadReg(DS1307_MIN));
-    *sec = bcd2dec(DS1307_ReadReg(DS1307_SEC));
+    *min = DS1307_GetMinute();
+    *sec = DS1307_GetSecond();
+}
+
+void DS1307_GetBcdTime(u8 *hour, u8 *min, u8 *sec) {
+    *hour = DS1307_ReadReg(DS1307_HOUR);
+    *min = DS1307_ReadReg(DS1307_MIN);
+    *sec = DS1307_ReadReg(DS1307_SEC);
 }

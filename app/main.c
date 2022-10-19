@@ -1,113 +1,116 @@
 #include "board.h"
+#include "time.h"
 
-u16 clockArrows[60][3] = {
-     {0, 120, 60}
-    ,{1, 130, 61}
-    ,{2, 141, 62}
-    ,{3, 151, 65}
-    ,{4, 161, 69}
-    ,{5, 170, 73}
-    ,{6, 179, 79}
-    ,{7, 187, 86}
-    ,{8, 194, 93}
-    ,{9, 201, 101}
-    ,{10, 207, 110}
-    ,{11, 211, 119}
-    ,{12, 215, 129}
-    ,{13, 218, 139}
-    ,{14, 219, 150}
-    ,{15, 220, 160}
-    ,{16, 219, 170}
-    ,{17, 218, 181}
-    ,{18, 215, 191}
-    ,{19, 211, 201}
-    ,{20, 207, 210}
-    ,{21, 201, 219}
-    ,{22, 194, 227}
-    ,{23, 187, 234}
-    ,{24, 179, 241}
-    ,{25, 170, 247}
-    ,{26, 161, 251}
-    ,{27, 151, 255}
-    ,{28, 141, 258}
-    ,{29, 130, 259}
-    ,{30, 120, 260}
-    ,{31, 110, 259}
-    ,{32, 99, 258}
-    ,{33, 89, 255}
-    ,{34, 79, 251}
-    ,{35, 70, 247}
-    ,{36, 61, 241}
-    ,{37, 53, 234}
-    ,{38, 46, 227}
-    ,{39, 39, 219}
-    ,{40, 33, 210}
-    ,{41, 29, 201}
-    ,{42, 25, 191}
-    ,{43, 22, 181}
-    ,{44, 21, 170}
-    ,{45, 20, 160}
-    ,{46, 21, 150}
-    ,{47, 22, 139}
-    ,{48, 25, 129}
-    ,{49, 29, 119}
-    ,{50, 33, 110}
-    ,{51, 39, 101}
-    ,{52, 46, 93}
-    ,{53, 53, 86}
-    ,{54, 61, 79}
-    ,{55, 70, 73}
-    ,{56, 79, 69}
-    ,{57, 89, 65}
-    ,{58, 99, 62}
-    ,{59, 110, 61}
-};
+u8 hourVal(u8 hour, u8 min) {
+    u8 ret = hour;
+    if(ret > 12) ret -= 12;
+    ret = (ret * 60 + min) / 12;
+    return ret;
+}
 
-u16 arrowColor = YELLOW;
+static void drawArrow(u8 val, u32 offset) {
+    u16 x = clockArrows[val][offset];
+    u16 y = clockArrows[val][offset + 1];
+    LCD_DrawLine(120+1, 160+1, x+1, y+1);
+    LCD_DrawLine(120-1, 160+1, x-1, y+1);
+    LCD_DrawLine(120+1, 160-1, x+1, y-1);
+    LCD_DrawLine(120-1, 160-1, x-1, y-1);
+}
 
-static void drawTime(void) {
-    static int oldSec = 0;
-    int sec = (upTime / 1000) % 60;
+static void drawMark(u8 val) {
+    u16 xb = clockArrows[val][SECONDS_ARROW];
+    u16 yb = clockArrows[val][SECONDS_ARROW + 1];
+    u16 xe = clockArrows[val][CIPHER_OUTER];
+    u16 ye = clockArrows[val][CIPHER_OUTER + 1];
+    if(val % 5 == 0) {
+        POINT_COLOR = RED;
+        LCD_DrawLine(xb+1, yb+1, xe+1, ye+1);
+        LCD_DrawLine(xb-1, yb+1, xe-1, ye+1);
+        LCD_DrawLine(xb+1, yb-1, xe+1, ye-1);
+        LCD_DrawLine(xb-1, yb-1, xe-1, ye-1);
+    } else {
+        POINT_COLOR = BLUE;
+        LCD_DrawLine(xb, yb, xe, ye);
+    }
+}
+
+static void drawCipherblat() {
+    for(u8 val = 0; val < 60; val++) {
+        drawMark(val);
+    }
+}
+
+static u8 valIsNear(u16 val, u16 val2) {
+    return (val2 >= val && val2 <= (val + 5)) ? 1 : 0;
+}
+
+static void drawTime(u16 x) {
+    static u8 oldSec = 200;
+    static u8 oldMin = 200;
+    static u8 oldHour = 200;
+    char buf[9];
+    u8 h, m, s, sec, min, hour, h24;
+
+    DS1307_GetBcdTime(&h, &m, &s);
+    sec = bcd2dec(s);
+    min = bcd2dec(m);
+    h24 = bcd2dec(h);
+    hour = hourVal(h24, min);
 
     if(sec == oldSec) return;
 
-    u16 oldX = clockArrows[oldSec][1];
-    u16 oldY = clockArrows[oldSec][2];
-    u16 newX = clockArrows[sec][1];
-    u16 newY = clockArrows[sec][2];
     POINT_COLOR = BLACK;
-    LCD_DrawLine(120, 160, oldX, oldY);
+    if(oldSec != 200) {
+        drawArrow(oldSec, SECONDS_ARROW);
+        if(min != oldMin) drawArrow(oldMin, SECONDS_ARROW);
+        if(hour != oldHour) drawArrow(oldHour, HOURS_ARROW);
+    }
 
-    POINT_COLOR = arrowColor;
-    LCD_DrawLine(120, 160, newX, newY);
+    POINT_COLOR = GREEN;
+    if(hour != oldHour || valIsNear(hour, oldMin) || valIsNear(hour, oldSec)) drawArrow(hour, HOURS_ARROW);
+    POINT_COLOR = CYAN;
+    if(min != oldMin || valIsNear(min, oldSec)) drawArrow(min, SECONDS_ARROW);
+    POINT_COLOR = YELLOW;
+    drawArrow(sec, SECONDS_ARROW);
+
+    POINT_COLOR = WHITE;
+    buf[0] = 0x30 + (h >> 4);
+    buf[1] = 0x30 + (h & 0xF);
+    buf[2] = ':';
+    buf[3] = 0x30 + (m >> 4);
+    buf[4] = 0x30 + (m & 0xF);
+    buf[5] = ':';
+    buf[6] = 0x30 + (s >> 4);
+    buf[7] = 0x30 + (s & 0xF);
+    buf[8] = 0;
+    LCD_PrintString(x + 5, 15, 16, buf, 0);
 
     oldSec = sec;
+    oldMin = min;
+    oldHour = hour;
 }
 
 int main(void) {
     init_hardware();
 
+    // DS1307_SetDateTime(22, 10, 19, 22, 23, 30);
+
     u8 id = BME280_GetChipId();
-    u8 yy = DS1307_GetHour();
 
     u8 buf[8] = { 0, 0, 0, 0, 0 };
     u8 on = 0;
 
-    LCD_Fill(1, 1, 10, 10, BLUE);
-    LCD_Fill(30, 1, 40, 10, BLUE);
-
     BACK_COLOR = BLACK;
     POINT_COLOR = RED;
-    u16 x = LCD_PrintString(2, 15, 12, "Size=12x6", 0);
-    POINT_COLOR = BRRED;
-    LCD_PrintString(x + 5, 15, 16, "Size=16x8", 0);
+    u16 x = LCD_PrintString(2, 15, 12, "Time:", 0);
+    drawCipherblat();
 
     // UART_SendByte(0x33);
     // UART_SendByte(0x34);
     // UART_SendByte(0x35);
 
     while (1) {
-        drawTime();
+        drawTime(x);
         if ((upTime % 500) == 0 && upTime) {
             if(on) {
                 PDout(13)=0;
@@ -132,21 +135,17 @@ int main(void) {
                 if(buf[2] == 0x01) {
                     PDout(12) = 1;
                     PDout(14) = 1;
-                    arrowColor = RED;
                 } else {
                     PDout(12) = 0;
                     PDout(14) = 0;
-                    arrowColor = YELLOW;
                 }
             } else {
                 if(buf[0] == 0x31) {
                     PDout(12) = 1;
                     PDout(14) = 1;
-                    arrowColor = RED;
                 } else {
                     PDout(12) = 0;
                     PDout(14) = 0;
-                    arrowColor = YELLOW;
                 }
             }
         }

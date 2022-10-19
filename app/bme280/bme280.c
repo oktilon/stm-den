@@ -6,5 +6,5 @@ void BME280_init(void) {
 }
 
 u8 BME280_GetChipId(void) {
-    return I2C_Read2(BME280_I2C, BME280_ADDR, BME280_CHIP_ID);
+    return I2C_Read(BME280_I2C, BME280_ADDR, BME280_CHIP_ID);
 }
