@@ -31,5 +31,7 @@ void DS1307_GetBcdTime(u8 *hour, u8 *min, u8 *sec);
 u8 DS1307_GetHour(void);
 u8 DS1307_GetMinute(void);
 u8 DS1307_GetSecond(void);
+u8 bcd2dec(u8 bcd);
+u8 dec2bcd(u8 dec);
 
 #endif //__DS1307_H

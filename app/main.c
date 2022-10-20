@@ -44,7 +44,7 @@ static u8 valIsNear(u16 val, u16 val2) {
     return (val2 >= val && val2 <= (val + 5)) ? 1 : 0;
 }
 
-static void drawTime(u16 x) {
+static u8 drawTime(u16 x) {
     static u8 oldSec = 200;
     static u8 oldMin = 200;
     static u8 oldHour = 200;
@@ -57,7 +57,7 @@ static void drawTime(u16 x) {
     h24 = bcd2dec(h);
     hour = hourVal(h24, min);
 
-    if(sec == oldSec) return;
+    if(sec == oldSec) return 0;
 
     POINT_COLOR = BLACK;
     if(oldSec != 200) {
@@ -88,6 +88,23 @@ static void drawTime(u16 x) {
     oldSec = sec;
     oldMin = min;
     oldHour = hour;
+    return 1;
+}
+
+static int displayValue(int x, int y, u32 val, int del, char *units) {
+    char txt[24] = { 0 };
+    int v1 = val / del;
+    itoa(v1, txt, 10);
+    x = LCD_PrintString(x, y, 16, txt, 0);
+    x = LCD_PrintString(x, y, 16, ",", 0);
+    int v2 = val % del;
+    if(del > 100) {
+   //     v2 = c                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+    }
+    int l = itoa(v2, txt, 10);
+    x = LCD_PrintString(x, y, 16, txt, 0);
+    x = LCD_PrintString(x, y, 16, units, 0);
+    return x;
 }
 
 int main(void) {
@@ -95,10 +112,12 @@ int main(void) {
 
     // DS1307_SetDateTime(22, 10, 19, 22, 23, 30);
 
-    u8 id = BME280_GetChipId();
+    // u8 id = BME280_GetChipId();
+    BME280_ReadCalibration();
 
     u8 buf[8] = { 0, 0, 0, 0, 0 };
-    u8 on = 0;
+    u8 on = 0, tck = 0, xp;
+    u32 temp = 0, press = 0, hum = 0;
 
     BACK_COLOR = BLACK;
     POINT_COLOR = RED;
@@ -110,8 +129,8 @@ int main(void) {
     // UART_SendByte(0x35);
 
     while (1) {
-        drawTime(x);
-        if ((upTime % 500) == 0 && upTime) {
+        tck = drawTime(x);
+        if (tck) {
             if(on) {
                 PDout(13)=0;
                 PDout(15)=1;
@@ -121,6 +140,16 @@ int main(void) {
                 PDout(15)=0;
                 on = 1;
             }
+            xp = 2;
+            temp = BME280_GetTemperature();
+            press = BME280_GetPressure();
+            hum = BME280_GetHumidity();
+            
+            xp = displayValue(xp, 290, temp, 100, " C");
+            xp += 5;
+            xp = displayValue(xp, 290, hum, 1000, "%");
+            xp += 5;
+            displayValue(xp, 290, press, 10000, "hP");
         }
         if (UART_GetDataSize() >= 4) {
             buf[0] = UART_GetByte();

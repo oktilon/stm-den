@@ -349,6 +349,8 @@
                     <state>$PROJ_DIR$\app\uart</state>
                     <state>$PROJ_DIR$\app\i2c</state>
                     <state>$PROJ_DIR$\app\ds1307</state>
+                    <state>$PROJ_DIR$\app\bme280</state>
+                    <state>$PROJ_DIR$\lib\tinystd</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -2137,6 +2139,9 @@
         <group>
             <name>inc</name>
             <file>
+                <name>$PROJ_DIR$\app\bme280\bme280.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\app\board\board.h</name>
             </file>
             <file>
@@ -2161,11 +2166,17 @@
                 <name>$PROJ_DIR$\app\sys\sys.h</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\app\time.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\app\uart\uart.h</name>
             </file>
         </group>
         <group>
             <name>src</name>
+            <file>
+                <name>$PROJ_DIR$\app\bme280\bme280.c</name>
+            </file>
             <file>
                 <name>$PROJ_DIR$\app\board\board.c</name>
             </file>
@@ -2191,6 +2202,12 @@
     </group>
     <group>
         <name>lib</name>
+        <file>
+            <name>$PROJ_DIR$\lib\tinystd\itoa.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\lib\tinystd\itoa.h</name>
+        </file>
     </group>
     <group>
         <name>stm</name>

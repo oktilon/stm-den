@@ -9,6 +9,7 @@
 #include "uart.h"
 #include "bme280.h"
 #include "ds1307.h"
+#include "itoa.h"
 
 extern RCC_ClocksTypeDef RCC_Clocks;
 
