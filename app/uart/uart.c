@@ -123,6 +123,79 @@ int UART_SendByte(u8 c) {
     return (0);
 }
 
+int UART_SendWord(u32 word) {
+    u32 w = word;
+    struct buf_st *p = &tbuf;
+
+    // If the buffer is full, return an error value
+    if (SIO_TBUFLEN >= TBUF_SIZE)
+        return (-1);
+
+    // Add data to the transmit buffer.
+    for(int i = 0; i < 4; i++) {
+        u8 c = (w & 0xFF000000) >> 24;
+        p->buf [p->in & (TBUF_SIZE - 1)] = c;
+        p->in++;
+        w = w << 8;
+    }
+
+    // If transmit interrupt is disabled, enable it
+    if (tx_restart) {
+        tx_restart = 0;
+        // enable TX interrupt
+        ESP_UART->CR1 |= USART_FLAG_TXE;
+    }
+
+    return (0);
+}
+
+int UART_SendBuffer(u8 *buf, u8 len) {
+    struct buf_st *p = &tbuf;
+
+    // If the buffer is full, return an error value
+    if (SIO_TBUFLEN >= TBUF_SIZE)
+        return (-1);
+
+    // Add data to the transmit buffer.
+    for(int i = 0; i < len; i++) {
+        p->buf [p->in & (TBUF_SIZE - 1)] = buf[i];
+        p->in++;
+    }
+
+    // If transmit interrupt is disabled, enable it
+    if (tx_restart) {
+        tx_restart = 0;
+        // enable TX interrupt
+        ESP_UART->CR1 |= USART_FLAG_TXE;
+    }
+
+    return (0);
+}
+
+int UART_SendString(char *buf, u8 len) {
+    struct buf_st *p = &tbuf;
+
+    // If the buffer is full, return an error value
+    if (SIO_TBUFLEN >= TBUF_SIZE)
+        return (-1);
+
+    // Add data to the transmit buffer.
+    for(int i = 0; i < len; i++) {
+        p->buf [p->in & (TBUF_SIZE - 1)] = (u8)(buf[i]);
+        p->in++;
+    }
+
+    // If transmit interrupt is disabled, enable it
+    if (tx_restart) {
+        tx_restart = 0;
+        // enable TX interrupt
+        ESP_UART->CR1 |= USART_FLAG_TXE;
+    }
+
+    return (0);
+}
+
+
 /*------------------------------------------------------------------------------
   GetKey
   receive a character
@@ -134,6 +207,21 @@ int UART_GetByte(void) {
         return (-1);
 
     return (p->buf [(p->out++) & (RBUF_SIZE - 1)]);
+}
+
+u32 UART_GetCommand(void) {
+    u32 ret = 0;
+    int i = 0;
+    struct buf_st *p = &rbuf;
+
+    if (SIO_RBUFLEN == 0)
+        return (0);
+
+    for(i = 0; i < 4; i++) {
+        ret = ret << 8;
+        ret |= (p->buf [(p->out++) & (RBUF_SIZE - 1)]);
+    }
+    return ret;
 }
 
 u16 UART_GetDataSize(void) {

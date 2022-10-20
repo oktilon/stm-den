@@ -58,7 +58,7 @@ void BME280_init(void);
 u8 BME280_GetChipId(void);
 void BME280_ReadCalibration();
 s32 BME280_GetTemperature();
-u32 BME280_GetPressure();
-u32 BME280_GetHumidity();
+u32 BME280_GetPressure(u8 raw);
+u32 BME280_GetHumidity(u8 raw);
 
 #endif //__BME280_H

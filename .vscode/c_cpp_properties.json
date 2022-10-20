@@ -4,11 +4,20 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
+                "${workspaceFolder}/app",
+                "${workspaceFolder}/app/bme280",
+                "${workspaceFolder}/app/ds1307",
+                "${workspaceFolder}/app/i2c",
+                "${workspaceFolder}/app/lcd",
+                "${workspaceFolder}/app/spi",
+                "${workspaceFolder}/app/sys",
+                "${workspaceFolder}/app/uart",
+                "${workspaceFolder}/app/board",
                 "${workspaceFolder}/lib/STM32F4xx/**",
                 "${workspaceFolder}/lib/STM32F4xx/CMSIS/Include/",
                 "${workspaceFolder}/lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/inc/",
-                "${workspaceFolder}/lib/STM32F4xx/CMSIS/Device/ST/STM32F4xx/Include/",
-                "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/include/**"
+                "${workspaceFolder}/lib/STM32F4xx/CMSIS/Device/ST/STM32F4xx/Include/"
+                // "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/include/**"
             ],
             "defines": [
                 "STM32F40_41xxx",

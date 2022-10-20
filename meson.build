@@ -23,7 +23,8 @@ inc = [
 
 src = [
       'app/main.c'
-    # , 'lib/tinystd/itoa.c'
+    , 'app/task.c'
+    , 'lib/tinystd/itoa.c'
     , 'app/ds1307/ds1307.c'
     , 'app/bme280/bme280.c'
     , 'app/sys/sys.c'

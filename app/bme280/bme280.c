@@ -122,16 +122,20 @@ s32 BME280_GetTemperature() {
     return ret;
 }
 
-u32 BME280_GetPressure() {
+u32 BME280_GetPressure(u8 raw) {
     u32 ret = 0U;
     u32 val = BME280_Read3bVal(BME280_PRESS_MSB);
     ret = BME280_compensate_P_int64(val);
+    if(raw) return ret;
+    ret = ((double)ret / (double)256) * (double)1000;
     return ret;
 }
 
-u32 BME280_GetHumidity() {
+u32 BME280_GetHumidity(u8 raw) {
     u32 ret = 0U;
     u32 val = BME280_Read2bVal(BME280_HUM_MSB);
     ret = bme280_compensate_H_int32(val);
+    if(raw) return ret;
+    ret = ((double)ret / (double)1024) * (double)1000;
     return ret;
 }

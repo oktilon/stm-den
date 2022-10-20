@@ -1,11 +1,24 @@
 #include "board.h"
 #include "time.h"
+#include "task.h"
+
+s32 temp = 0;
+u32 press = 0,
+    hum = 0;
 
 u8 hourVal(u8 hour, u8 min) {
     u8 ret = hour;
     if(ret > 12) ret -= 12;
     ret = (ret * 60 + min) / 12;
     return ret;
+}
+
+static int pow10(int val) {
+    static int pows[10] = { 1, 10, 100, 1000, 10000
+        , 100000, 1000000, 10000000
+        , 100000000, 1000000000 };
+    if(val < 0 || val > 9) return 0;
+    return pows[val];
 }
 
 static void drawArrow(u8 val, u32 offset) {
@@ -34,7 +47,7 @@ static void drawMark(u8 val) {
     }
 }
 
-static void drawCipherblat() {
+static void drawClockFace() {
     for(u8 val = 0; val < 60; val++) {
         drawMark(val);
     }
@@ -55,6 +68,7 @@ static u8 drawTime(u16 x) {
     sec = bcd2dec(s);
     min = bcd2dec(m);
     h24 = bcd2dec(h);
+    if(sec > 59 || min > 59 || h24 > 23) return 1;
     hour = hourVal(h24, min);
 
     if(sec == oldSec) return 0;
@@ -91,17 +105,28 @@ static u8 drawTime(u16 x) {
     return 1;
 }
 
-static int displayValue(int x, int y, u32 val, int del, char *units) {
+static int displayValue(int x, int y, u32 val, int del, int dec, char *units) {
     char txt[24] = { 0 };
-    int v1 = val / del;
-    itoa(v1, txt, 10);
+    int div = pow10(del);
+    int v1 = val / div;
+    int v2 = val % div;
+    int len, i, j;
+    itoas(v1, txt, 10);
     x = LCD_PrintString(x, y, 16, txt, 0);
     x = LCD_PrintString(x, y, 16, ",", 0);
-    int v2 = val % del;
-    if(del > 100) {
-   //     v2 = c                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+    x -= 3;
+    len = itoas(v2, txt, 10);
+    if(len < del) {
+        for(j = del, i = len; i >= 0; j--, i--) {
+            txt[j] = txt[i];
+        }
+        for(i = 0; i <= j; i++) {
+            txt[i] = '0';
+        }
     }
-    int l = itoa(v2, txt, 10);
+    if(dec < del) {
+        txt[dec] = 0;
+    }
     x = LCD_PrintString(x, y, 16, txt, 0);
     x = LCD_PrintString(x, y, 16, units, 0);
     return x;
@@ -109,20 +134,18 @@ static int displayValue(int x, int y, u32 val, int del, char *units) {
 
 int main(void) {
     init_hardware();
-
+    delay_ms(50);
     // DS1307_SetDateTime(22, 10, 19, 22, 23, 30);
 
     // u8 id = BME280_GetChipId();
     BME280_ReadCalibration();
 
-    u8 buf[8] = { 0, 0, 0, 0, 0 };
-    u8 on = 0, tck = 0, xp;
-    u32 temp = 0, press = 0, hum = 0;
+    u8 on = 0, tck = 0;
 
     BACK_COLOR = BLACK;
     POINT_COLOR = RED;
     u16 x = LCD_PrintString(2, 15, 12, "Time:", 0);
-    drawCipherblat();
+    drawClockFace();
 
     // UART_SendByte(0x33);
     // UART_SendByte(0x34);
@@ -140,46 +163,18 @@ int main(void) {
                 PDout(15)=0;
                 on = 1;
             }
-            xp = 2;
             temp = BME280_GetTemperature();
-            press = BME280_GetPressure();
-            hum = BME280_GetHumidity();
-            
-            xp = displayValue(xp, 290, temp, 100, " C");
-            xp += 5;
-            xp = displayValue(xp, 290, hum, 1000, "%");
-            xp += 5;
-            displayValue(xp, 290, press, 10000, "hP");
-        }
-        if (UART_GetDataSize() >= 4) {
-            buf[0] = UART_GetByte();
-            __asm("NOP");
-            buf[1] = UART_GetByte();
-            __asm("NOP");
-            buf[2] = UART_GetByte();
-            __asm("NOP");
-            buf[3] = UART_GetByte();
-            __asm("NOP");
-            if(buf[0] == 0xAA && buf[1] == 0x55 && buf[3] == 0x55) {
-                if(buf[2] == 0x01) {
-                    PDout(12) = 1;
-                    PDout(14) = 1;
-                } else {
-                    PDout(12) = 0;
-                    PDout(14) = 0;
-                }
-            } else {
-                if(buf[0] == 0x31) {
-                    PDout(12) = 1;
-                    PDout(14) = 1;
-                } else {
-                    PDout(12) = 0;
-                    PDout(14) = 0;
-                }
-            }
-        }
-    }
+            press = BME280_GetPressure(0);
+            hum = BME280_GetHumidity(0);
 
-    while (1);
+            displayValue(2, 275, temp, 2, 2, "^C");
+            displayValue(120, 275, hum, 3, 2, "%");
+            displayValue(2, 293, press, 6, 2, "kPa");
+            u32 mmhg = ((double)press / 133322.0) * 100.0;
+            displayValue(120, 293, mmhg, 2, 2, "mmHg");
+        }
+
+        checkUartCommand();
+    }
 }
 
