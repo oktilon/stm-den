@@ -97,7 +97,7 @@ static u8 drawTime(u16 x) {
     buf[6] = 0x30 + (s >> 4);
     buf[7] = 0x30 + (s & 0xF);
     buf[8] = 0;
-    LCD_PrintString(x + 5, 15, 16, buf, 0);
+    LCD_PrintString(x + 3, 2, 16, buf, 0);
 
     oldSec = sec;
     oldMin = min;
@@ -144,7 +144,7 @@ int main(void) {
 
     BACK_COLOR = BLACK;
     POINT_COLOR = RED;
-    u16 x = LCD_PrintString(2, 15, 12, "Time:", 0);
+    u16 x = LCD_PrintString(2, 2, 16, "Time:", 0);
     drawClockFace();
 
     // UART_SendByte(0x33);
