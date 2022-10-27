@@ -9,7 +9,7 @@ u8 dig_H1, dig_H3, dig_H6;
 
 void BME280_init(void) {
     I2C_GPIO_Initialize(BME280_I2C_GPIO, BME280_SCL_PIN, BME280_SDA_PIN);
-    I2C_Initialize(BME280_I2C, 100000, 0x00, I2C_Ack_Enable, I2C_AcknowledgedAddress_7bit);
+    I2C_Initialize(BME280_I2C, 400000, 0x00, I2C_Ack_Enable, I2C_AcknowledgedAddress_7bit);
 }
 
 static u16 BME280_Read2bReg(uint8_t reg1) {
@@ -69,9 +69,9 @@ static BME280_U32_t bme280_compensate_H_int32(BME280_S32_t adc_H) {
     BME280_S32_t v_x1_u32r;
     v_x1_u32r = (t_fine - ((BME280_S32_t)76800));
     v_x1_u32r = (((((adc_H << 14) - (((BME280_S32_t)dig_H4) << 20) - (((BME280_S32_t)dig_H5) * v_x1_u32r)) +
-    ((BME280_S32_t)16384)) >> 15) * (((((((v_x1_u32r * ((BME280_S32_t)dig_H6)) >> 10) * (((v_x1_u32r *
-    ((BME280_S32_t)dig_H3)) >> 11) + ((BME280_S32_t)32768))) >> 10) + ((BME280_S32_t)2097152)) *
-    ((BME280_S32_t)dig_H2) + 8192) >> 14));
+        ((BME280_S32_t)16384)) >> 15) * (((((((v_x1_u32r * ((BME280_S32_t)dig_H6)) >> 10) * (((v_x1_u32r *
+        ((BME280_S32_t)dig_H3)) >> 11) + ((BME280_S32_t)32768))) >> 10) + ((BME280_S32_t)2097152)) *
+        ((BME280_S32_t)dig_H2) + 8192) >> 14));
     v_x1_u32r = (v_x1_u32r - (((((v_x1_u32r >> 15) * (v_x1_u32r >> 15)) >> 7) * ((BME280_S32_t)dig_H1)) >> 4));
     v_x1_u32r = (v_x1_u32r < 0 ? 0 : v_x1_u32r);
     v_x1_u32r = (v_x1_u32r > 419430400 ? 419430400 : v_x1_u32r);

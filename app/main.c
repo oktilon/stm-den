@@ -8,7 +8,7 @@ u32 press = 0,
 
 u8 hourVal(u8 hour, u8 min) {
     u8 ret = hour;
-    if(ret > 12) ret -= 12;
+    if(ret >= 12) ret -= 12;
     ret = (ret * 60 + min) / 12;
     return ret;
 }
@@ -132,6 +132,10 @@ static int displayValue(int x, int y, u32 val, int del, int dec, char *units) {
     return x;
 }
 
+static u8 checkTime() {
+    return 1;
+}
+
 int main(void) {
     init_hardware();
     delay_ms(50);
@@ -141,6 +145,11 @@ int main(void) {
     BME280_ReadCalibration();
 
     u8 on = 0, tck = 0;
+
+    while(!tck) {
+        tck = checkTime();
+    }
+
 
     BACK_COLOR = BLACK;
     POINT_COLOR = RED;

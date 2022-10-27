@@ -95,3 +95,45 @@ u8 I2C_Read(I2C_TypeDef *I2Cx, u8 chip, u8 reg) {
     waitForFlag(I2Cx, I2C_FLAG_BUSY, RESET);
     return ret;
 }
+
+int I2C_ReadBytes(I2C_TypeDef *I2Cx, u8 chip, u8 reg, u8 *buf, u8 size) {
+    u8 left = size;
+    u8 ix = 0;
+
+    // One byte only
+    if(size == 1) {
+        buf[0] = I2C_Read(I2Cx, chip, reg);
+        return 1;
+    }
+
+    // START
+    I2C_GenerateSTART(I2Cx, ENABLE);
+    waitForFlag(I2Cx, I2C_FLAG_SB, SET);
+
+    // SLAVE ADDR + READ
+    I2C_Send7bitAddress(I2Cx, chip << 1, I2C_Direction_Transmitter);
+    waitForFlag(I2Cx, I2C_FLAG_ADDR, SET);
+    (void) I2Cx->SR2; // Clear ADDR
+
+    // REGISTER ADDR
+    I2C_SendData(I2Cx, reg);
+    waitForFlag(I2Cx, I2C_FLAG_BTF, SET);
+
+    // REPEAT START
+    I2C_GenerateSTART(I2Cx, ENABLE);
+    waitForFlag(I2Cx, I2C_FLAG_SB, SET);
+
+    // SLAVE ADDR
+    I2C_Send7bitAddress(I2Cx, chip << 1, I2C_Direction_Receiver);
+    waitForFlag(I2Cx, I2C_FLAG_ADDR, SET);
+    (void) I2Cx->SR2; // Clear ADDR
+
+    // GET DATA
+    I2C_AcknowledgeConfig(I2Cx, DISABLE);
+    I2C_GenerateSTOP(I2Cx, ENABLE);
+    waitForFlag(I2Cx, I2C_FLAG_RXNE, SET);
+    buf[ix] = I2C_ReceiveData(I2Cx);
+
+    waitForFlag(I2Cx, I2C_FLAG_BUSY, RESET);
+    return 0;
+}
