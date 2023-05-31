@@ -1,10 +1,10 @@
 # STM32 ILI9341 spi
 TOC:
  1. [Title1](#1-title-one)
-   1. [Title11](#11-subtitle-oneone)
-   2. [Title12](#12-subtitle-onetwo)
+    1. [Title11](#11-subtitle-oneone)
+    2. [Title12](#12-subtitle-onetwo)
  2. [Title2](#2-title-two)
-   1. [Title21](#21-subtitle-twoone)
+    1. [Title21](#21-subtitle-twoone)
 
 ## 1. Title one
 
