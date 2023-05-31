@@ -1,10 +1,10 @@
 # STM32 ILI9341 spi
 TOC:
- - [Title1](#tit-1)
-  - [Title11](#tit-1-1)
-  - [Title12](#tit-1-2)
- - [Title2](#tit-2)
-  - [Title21](#tit-2-1)
+ - [Title1](#1-title-one)
+  - [Title11](#11-subtitle-oneone)
+  - [Title12](#12-subtitle-onetwo)
+ - [Title2](#2-title-two)
+  - [Title21](#21-subtitle-twoone)
 
 ## 1. Title one
 
@@ -21,4 +21,6 @@ Title text
 ### 2.1. Subtitle TwoOne
 Subtitle text 2-1
 
+```bash
  openocd -f interface/stlink-v2.cfg -f target/stm32f1x.cfg -c "program build/$(TARGET).elf verify exit reset"
+```
