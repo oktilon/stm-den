@@ -37,15 +37,22 @@ BUILD_DIR = build
 # C sources
 C_SOURCES =  \
 app/main.c \
+app/task.c \
 app/sys/sys.c \
 app/board/board.c \
 app/spi/spi.c \
 app/lcd/lcd.c \
+app/i2c/i2c.c \
+app/uart/uart.c \
+app/bme280/bme280.c \
+app/ds1307/ds1307.c \
+lib/tinystd/itoa.c \
 lib/STM32F4xx/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c \
 lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rcc.c \
 lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_tim.c \
 lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_gpio.c \
 lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.c \
+lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_i2c.c \
 lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dma.c \
 lib/STM32F4xx/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_usart.c
 
@@ -108,8 +115,11 @@ AS_INCLUDES =
 C_INCLUDES =  \
 -Iapp \
 -Iapp/board \
+-Iapp/bme280 \
+-Iapp/ds1307 \
 -Iapp/lcd \
 -Iapp/spi \
+-Iapp/i2c \
 -Iapp/sys \
 -Iapp/uart \
 -Ilib/tinystd \
