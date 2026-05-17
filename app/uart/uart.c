@@ -195,6 +195,23 @@ int UART_SendString(char *buf, u8 len) {
     return (0);
 }
 
+int UART_SendCrLf(void) {
+    return UART_SendString("\r\n", 2);
+}
+
+int UART_SendByteHex(u8 c) {
+    char hex[2];
+    hex[0] = (c >> 4) & 0x0F;
+    hex[1] = c & 0x0F;
+    for(int i = 0; i < 2; i++) {
+        if(hex[i] > 9) {
+            hex[i] = 'A' + (hex[i] - 10);
+        } else {
+            hex[i] = '0' + hex[i];
+        }
+    }
+    return UART_SendString(hex, 2);
+}
 
 /*------------------------------------------------------------------------------
   GetKey

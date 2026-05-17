@@ -20,9 +20,11 @@
 
 void UART_init(void);
 int UART_SendByte(u8 c);
+int UART_SendByteHex(u8 c);
 int UART_SendWord(u32 c);
 int UART_SendBuffer(u8 *buf, u8 len);
 int UART_SendString(char *buf, u8 len);
+int UART_SendCrLf(void);
 int UART_GetByte(void);
 u32 UART_GetCommand(void);
 u16 UART_GetDataSize(void);

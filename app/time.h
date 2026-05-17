@@ -1,3 +1,10 @@
+#define INIT_YEAR 22
+#define INIT_MONTH 10
+#define INIT_DAY 19
+#define INIT_HOUR 9
+#define INIT_MINUTE 0
+#define INIT_SECOND 0
+
 #define SECONDS_ARROW    1U
 #define HOURS_ARROW      3U
 #define CIPHER_OUTER     5U

@@ -12,7 +12,7 @@ void DS1307_init(void) {
     I2C_GPIO_Initialize(DS1307_I2C_GPIO, DS1307_SCL_PIN, DS1307_SDA_PIN);
     I2C_Initialize(DS1307_I2C, 100000, 0x00, I2C_Ack_Enable, I2C_AcknowledgedAddress_7bit);
 
-    // DS1307_WriteReg(DS1307_CTRL, 0x00);
+    DS1307_WriteReg(DS1307_CTRL, 0x00);
 }
 
 u8 bcd2dec(u8 bcd) {

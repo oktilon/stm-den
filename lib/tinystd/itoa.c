@@ -1,9 +1,9 @@
 #include "itoa.h"
 
-unsigned long itoas(int value, char *sp, int radix) {
+unsigned long itoas(long value, char *sp, int radix) {
     unsigned long len;
-    char          tmp[16], *tp = tmp;
-    int           i, v, sign   = radix == 10 && value < 0;
+    char          tmp[32], *tp = tmp;
+    long          i, v, sign   = radix == 10 && value < 0;
 
     v = sign ? -value : value;
 

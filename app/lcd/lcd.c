@@ -565,6 +565,16 @@ void LCD_PutChar(u16 x, u16 y, u16 fc, u16 bc, char ch, u8 size, u8 mode) {
     LCD_SetWindows(0, 0, lcddev.width-1, lcddev.height-1);
 }
 
+/**
+ * @brief
+ *
+ * @param x u16 coord X
+ * @param y u16 coord Y
+ * @param size u8 font size 12 (12x6) or 16 (16x8)
+ * @param p char* string to be printed
+ * @param mode u8 mode 0: overwrite background, 1: only overwrite foreground
+ * @return u16
+ */
 u16 LCD_PrintString(u16 x, u16 y, u8 size, char *p, u8 mode) {
     while((*p<='~')&&(*p>=' ')) {
         if( x > (lcddev.width - 1) || y > (lcddev.height-1) ) {

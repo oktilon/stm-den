@@ -9,12 +9,12 @@ void checkUartCommand(void) {
     u16 x;
     if (UART_GetDataSize() >= 4) {
         pack = UART_GetCommand();
+        itoas(pack, buf, 16);
+        x = LCD_PrintString(2, 20, 12, buf, 0);
         if(!(IS_VALID_COMMAND(pack) || IS_VALID_MANUAL(pack))) return;
         cmd = (pack & 0xFF00) >> 8;
 
         itoas(cmd, dig, 16);
-        itoas(pack, buf, 16);
-        x = LCD_PrintString(2, 20, 12, buf, 0);
         x = LCD_PrintString(x, 20, 12, "=", 0);
         x = LCD_PrintString(x, 20, 12, dig, 0);
         x = LCD_PrintString(x, 20, 12, "-", 0);

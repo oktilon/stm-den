@@ -13,7 +13,7 @@ u8 hourVal(u8 hour, u8 min) {
     return ret;
 }
 
-static int pow10(int val) {
+static int ppow10(int val) {
     static int pows[10] = { 1, 10, 100, 1000, 10000
         , 100000, 1000000, 10000000
         , 100000000, 1000000000 };
@@ -57,21 +57,77 @@ static u8 valIsNear(u16 val, u16 val2) {
     return (val2 >= val && val2 <= (val + 5)) ? 1 : 0;
 }
 
-static u8 drawTime(u16 x) {
+static u8 drawTime(u16 x, u32 *pNextSwitch) {
     static u8 oldSec = 200;
     static u8 oldMin = 200;
     static u8 oldHour = 200;
+    static u8 intSec = 0, intMin = 0, intHour = 0;
+    u8 isManual = 0;
     char buf[9];
     u8 h, m, s, sec, min, hour, h24;
+    u16 xc;
 
     DS1307_GetBcdTime(&h, &m, &s);
     sec = bcd2dec(s);
     min = bcd2dec(m);
     h24 = bcd2dec(h);
-    if(sec > 59 || min > 59 || h24 > 23) return 1;
+
+    if(sec > 59 || min > 59 || h24 > 23) {
+        isManual = 1;
+        if (oldSec == 200) {
+            intSec = INIT_SECOND;
+            intMin = INIT_MINUTE;
+            intHour = INIT_HOUR;
+        } else {
+            if (*pNextSwitch < upTime) {
+                *pNextSwitch = upTime + 1000;
+                intSec++;
+                if(intSec > 59) {
+                    intSec = 0;
+                    intMin++;
+                }
+                if(intMin > 59) {
+                    intMin = 0;
+                    intHour++;
+                }
+                if(intHour > 23) {
+                    intHour = 0;
+                }
+            }
+        }
+        sec = intSec;
+        min = intMin;
+        h24 = intHour;
+        s = dec2bcd(intSec);
+        m = dec2bcd(intMin);
+        h = dec2bcd(intHour);
+    }
+
+    POINT_COLOR = WHITE;
+    buf[0] = 0x30 + (h >> 4);
+    buf[1] = 0x30 + (h & 0xF);
+    buf[2] = ':';
+    buf[3] = 0x30 + (m >> 4);
+    buf[4] = 0x30 + (m & 0xF);
+    buf[5] = ':';
+    buf[6] = 0x30 + (s >> 4);
+    buf[7] = 0x30 + (s & 0xF);
+    buf[8] = 0;
+    xc = LCD_PrintString(x + 3, 2, 16, buf, 0);
+
+    if (isManual) {
+        POINT_COLOR = RED;
+        LCD_PrintString(xc, 2, 16, " (TCK) ", 0);
+    } else {
+        POINT_COLOR = GREEN;
+        LCD_PrintString(xc, 2, 16, " (RTC) ", 0);
+    }
+
     hour = hourVal(h24, min);
 
     if(sec == oldSec) return 0;
+
+
 
     POINT_COLOR = BLACK;
     if(oldSec != 200) {
@@ -87,18 +143,6 @@ static u8 drawTime(u16 x) {
     POINT_COLOR = YELLOW;
     drawArrow(sec, SECONDS_ARROW);
 
-    POINT_COLOR = WHITE;
-    buf[0] = 0x30 + (h >> 4);
-    buf[1] = 0x30 + (h & 0xF);
-    buf[2] = ':';
-    buf[3] = 0x30 + (m >> 4);
-    buf[4] = 0x30 + (m & 0xF);
-    buf[5] = ':';
-    buf[6] = 0x30 + (s >> 4);
-    buf[7] = 0x30 + (s & 0xF);
-    buf[8] = 0;
-    LCD_PrintString(x + 3, 2, 16, buf, 0);
-
     oldSec = sec;
     oldMin = min;
     oldHour = hour;
@@ -107,7 +151,7 @@ static u8 drawTime(u16 x) {
 
 static int displayValue(int x, int y, u32 val, int del, int dec, char *units) {
     char txt[24] = { 0 };
-    int div = pow10(del);
+    int div = ppow10(del);
     int v1 = val / div;
     int v2 = val % div;
     int len, i, j;
@@ -137,12 +181,31 @@ static u8 checkTime() {
 }
 
 int main(void) {
+    u32 nextSwitch = 0;
     init_hardware();
     delay_ms(50);
-    // DS1307_SetDateTime(22, 10, 19, 22, 23, 30);
+    DS1307_SetDateTime(INIT_YEAR, INIT_MONTH, INIT_DAY, INIT_HOUR, INIT_MINUTE, INIT_SECOND);
 
-    // u8 id = BME280_GetChipId();
+    u8 id = BME280_GetChipId();
     BME280_ReadCalibration();
+
+    char buf[32] = "0x__";
+    if((id >> 4) > 9) {
+        buf[2] = 'A' + ((id >> 4) - 10);
+    } else {
+        buf[2] = '0' + (id >> 4);
+    }
+    if((id & 0xF) > 9) {
+        buf[3] = 'A' + ((id & 0xF) - 10);
+    } else {
+        buf[3] = '0' + (id & 0xF);
+    }
+
+
+    // UART_SendCrLf();
+    // UART_SendString("BME280 ID=0x", 10);
+    // UART_SendString(buf + 6, 2);
+    // UART_SendCrLf();
 
     u8 on = 0, tck = 0;
 
@@ -154,14 +217,15 @@ int main(void) {
     BACK_COLOR = BLACK;
     POINT_COLOR = RED;
     u16 x = LCD_PrintString(2, 2, 16, "Time:", 0);
+    POINT_COLOR = BLUE;
+    u16 chipX = LCD_PrintString(2, 20, 16, "BME280 id=", 0);
+    POINT_COLOR = CYAN;
+    LCD_PrintString(chipX + 2, 20, 16, buf, 0);
     drawClockFace();
 
-    // UART_SendByte(0x33);
-    // UART_SendByte(0x34);
-    // UART_SendByte(0x35);
 
     while (1) {
-        tck = drawTime(x);
+        tck = drawTime(x, &nextSwitch);
         if (tck) {
             if(on) {
                 PDout(13)=0;
@@ -176,11 +240,20 @@ int main(void) {
             press = BME280_GetPressure(0);
             hum = BME280_GetHumidity(0);
 
+            POINT_COLOR = GREEN;
             displayValue(2, 275, temp, 2, 2, "^C");
+            POINT_COLOR = YELLOW;
             displayValue(120, 275, hum, 3, 2, "%");
+            POINT_COLOR = WHITE;
             displayValue(2, 293, press, 6, 2, "kPa");
             u32 mmhg = ((double)press / 133322.0) * 100.0;
+            POINT_COLOR = CYAN;
             displayValue(120, 293, mmhg, 2, 2, "mmHg");
+
+            // itoas(upTime, buf, 10);
+            // LCD_PrintString(100, 145, 16, buf, 0);
+
+            nextSwitch = upTime + 1000;
         }
 
         checkUartCommand();

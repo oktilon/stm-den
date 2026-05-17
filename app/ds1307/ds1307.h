@@ -9,13 +9,15 @@
 #define DS1307_SEC      ((uint8_t)0x00)
 #define DS1307_MIN      ((uint8_t)0x01)
 #define DS1307_HOUR     ((uint8_t)0x02)
+// Day of week 1-7
 #define DS1307_DAY      ((uint8_t)0x03)
+// Day of month 1-31
 #define DS1307_DATE     ((uint8_t)0x04)
 #define DS1307_MON      ((uint8_t)0x05)
 #define DS1307_YEAR     ((uint8_t)0x06)
 #define DS1307_CTRL     ((uint8_t)0x07)
 // RAM 0-55
-#define DS3107_RAM(x)   ((uint8_t)(0x08+(x))
+#define DS3107_RAM(x)   ((uint8_t)(0x08+(x)))
 
 // PB6 - I2C1 SCL
 // PB7 - I2C1 SDA
