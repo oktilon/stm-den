@@ -53,6 +53,7 @@ typedef signed long long     BME280_S64_t;
 #define BME280_SCL_PIN      10
 #define BME280_SDA_PIN      11
 #define BME280_I2C          I2C2
+#define BME280_I2C_Timeout  255
 
 void BME280_init(void);
 u8 BME280_GetChipId(void);

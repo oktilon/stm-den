@@ -184,7 +184,7 @@ int main(void) {
     u32 nextSwitch = 0;
     init_hardware();
     delay_ms(50);
-    DS1307_SetDateTime(INIT_YEAR, INIT_MONTH, INIT_DAY, INIT_HOUR, INIT_MINUTE, INIT_SECOND);
+    // DS1307_SetDateTime(26, 5, 26, 13, 5, 45);
 
     u8 id = BME280_GetChipId();
     BME280_ReadCalibration();

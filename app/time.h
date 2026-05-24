@@ -1,6 +1,3 @@
-#define INIT_YEAR 22
-#define INIT_MONTH 10
-#define INIT_DAY 19
 #define INIT_HOUR 9
 #define INIT_MINUTE 0
 #define INIT_SECOND 0

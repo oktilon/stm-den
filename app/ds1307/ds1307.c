@@ -1,17 +1,26 @@
 #include "ds1307.h"
+#include "sys.h"
 
 static void DS1307_WriteReg(u8 reg, u8 data) {
-    I2C_Write(DS1307_I2C, DS1307_ADDR, reg, data);
+    I2C_Write(DS1307_I2C, DS1307_ADDR, reg, data, DS1307_I2C_Timeout);
 }
 
 static u8 DS1307_ReadReg(u8 reg) {
-    return I2C_Read(DS1307_I2C, DS1307_ADDR, reg);
+    return I2C_Read(DS1307_I2C, DS1307_ADDR, reg, DS1307_I2C_Timeout);
 }
 
 void DS1307_init(void) {
     I2C_GPIO_Initialize(DS1307_I2C_GPIO, DS1307_SCL_PIN, DS1307_SDA_PIN);
     I2C_Initialize(DS1307_I2C, 100000, 0x00, I2C_Ack_Enable, I2C_AcknowledgedAddress_7bit);
 
+    delay_ms(100);
+
+    u8 sec = DS1307_ReadReg(DS1307_SEC);
+    if (sec & 0x80) {
+        // Clock is halted, start it
+        sec &= 0x7F;
+        DS1307_WriteReg(DS1307_SEC, sec);
+    }
     DS1307_WriteReg(DS1307_CTRL, 0x00);
 }
 

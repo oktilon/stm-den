@@ -13,21 +13,21 @@ void BME280_init(void) {
 }
 
 static u16 BME280_Read2bReg(uint8_t reg1) {
-    u16 lsb = I2C_Read(BME280_I2C, BME280_ADDR, reg1);
-    u16 msb = I2C_Read(BME280_I2C, BME280_ADDR, reg1 + 1);
+    u16 lsb = I2C_Read(BME280_I2C, BME280_ADDR, reg1, BME280_I2C_Timeout);
+    u16 msb = I2C_Read(BME280_I2C, BME280_ADDR, reg1 + 1, BME280_I2C_Timeout);
     return (msb << 8) | lsb;
 }
 
 static u16 BME280_Read2bVal(uint8_t reg1) {
-    u16 msb = I2C_Read(BME280_I2C, BME280_ADDR, reg1);
-    u16 lsb = I2C_Read(BME280_I2C, BME280_ADDR, reg1 + 1);
+    u16 msb = I2C_Read(BME280_I2C, BME280_ADDR, reg1, BME280_I2C_Timeout);
+    u16 lsb = I2C_Read(BME280_I2C, BME280_ADDR, reg1 + 1, BME280_I2C_Timeout);
     return (msb << 8) | lsb;
 }
 
 static u32 BME280_Read3bVal(uint8_t reg1) {
-    u32 msb = I2C_Read(BME280_I2C, BME280_ADDR, reg1);
-    u32 lsb = I2C_Read(BME280_I2C, BME280_ADDR, reg1 + 1);
-    u32 xlsb = I2C_Read(BME280_I2C, BME280_ADDR, reg1 + 2);
+    u32 msb = I2C_Read(BME280_I2C, BME280_ADDR, reg1, BME280_I2C_Timeout);
+    u32 lsb = I2C_Read(BME280_I2C, BME280_ADDR, reg1 + 1, BME280_I2C_Timeout);
+    u32 xlsb = I2C_Read(BME280_I2C, BME280_ADDR, reg1 + 2, BME280_I2C_Timeout);
     return (msb << 12) | (lsb << 4) | (xlsb >> 4);
 }
 
@@ -79,7 +79,7 @@ static BME280_U32_t bme280_compensate_H_int32(BME280_S32_t adc_H) {
 }
 
 u8 BME280_GetChipId(void) {
-    return I2C_Read(BME280_I2C, BME280_ADDR, BME280_CHIP_ID);
+    return I2C_Read(BME280_I2C, BME280_ADDR, BME280_CHIP_ID, BME280_I2C_Timeout);
 }
 
 void BME280_ReadCalibration() {
@@ -98,21 +98,21 @@ void BME280_ReadCalibration() {
     dig_P8 = BME280_Read2bReg(BME280_P8);
     dig_P9 = BME280_Read2bReg(BME280_P9);
     // Humidity
-    dig_H1 = I2C_Read(BME280_I2C, BME280_ADDR, BME280_H1);
+    dig_H1 = I2C_Read(BME280_I2C, BME280_ADDR, BME280_H1, BME280_I2C_Timeout);
     dig_H2 = BME280_Read2bReg(BME280_H2);
-    dig_H3 = I2C_Read(BME280_I2C, BME280_ADDR, BME280_H3);
-    dig_H6 = I2C_Read(BME280_I2C, BME280_ADDR, BME280_H6);
+    dig_H3 = I2C_Read(BME280_I2C, BME280_ADDR, BME280_H3, BME280_I2C_Timeout);
+    dig_H6 = I2C_Read(BME280_I2C, BME280_ADDR, BME280_H6, BME280_I2C_Timeout);
     // H4.H5
-    u16 h4_msb = I2C_Read(BME280_I2C, BME280_ADDR, BME280_H4_H);
-    u16 h4_h5  = I2C_Read(BME280_I2C, BME280_ADDR, BME280_H4_H5);
-    u16 h5_lsb = I2C_Read(BME280_I2C, BME280_ADDR, BME280_H5_L);
+    u16 h4_msb = I2C_Read(BME280_I2C, BME280_ADDR, BME280_H4_H, BME280_I2C_Timeout);
+    u16 h4_h5  = I2C_Read(BME280_I2C, BME280_ADDR, BME280_H4_H5, BME280_I2C_Timeout);
+    u16 h5_lsb = I2C_Read(BME280_I2C, BME280_ADDR, BME280_H5_L, BME280_I2C_Timeout);
     dig_H4 = (h4_msb << 4) | (h4_h5 & 0x0F);
     dig_H5 = ((h4_h5 & 0xF0) << 4) | h5_lsb;
 
     // Setup mode
-    I2C_Write(BME280_I2C, BME280_ADDR, BME280_CTRL_HUM, 0x04);
-    I2C_Write(BME280_I2C, BME280_ADDR, BME280_CTRL_MEAS, 0x93);
-    // I2C_Write(BME280_I2C, BME280_ADDR, BME280_CONFIG, 0x00);
+    I2C_Write(BME280_I2C, BME280_ADDR, BME280_CTRL_HUM, 0x04, BME280_I2C_Timeout);
+    I2C_Write(BME280_I2C, BME280_ADDR, BME280_CTRL_MEAS, 0x93, BME280_I2C_Timeout);
+    // I2C_Write(BME280_I2C, BME280_ADDR, BME280_CONFIG, 0x00, BME280_I2C_Timeout);
 }
 
 s32 BME280_GetTemperature() {

@@ -32,108 +32,160 @@ void I2C_GPIO_Initialize(GPIO_TypeDef *GPIOx, u8 pinSCL, u8 pinSDA) {
     GPIO_PinAFConfig(GPIOx, pinSDA, I2C_AF);
 }
 
-static void waitForFlag(I2C_TypeDef *I2Cx, u32 flag, FlagStatus state) {
-    u8 timeout = 255;
+static void waitForFlag(I2C_TypeDef *I2Cx, u32 flag, FlagStatus state, u32 flagTimeout) {
+    u32 timeout = flagTimeout;
     while(I2C_GetFlagStatus(I2Cx, flag) != state && timeout > 0) {
         timeout--;
     }
 }
 
-void I2C_Write(I2C_TypeDef *I2Cx, u8 chip, u8 reg, u8 data) {
+void I2C_Write(I2C_TypeDef *I2Cx, u8 chip, u8 reg, u8 data, u32 flag_timeout) {
     // START
     I2C_GenerateSTART(I2Cx, ENABLE);
-    waitForFlag(I2Cx, I2C_FLAG_SB, SET);
+    waitForFlag(I2Cx, I2C_FLAG_SB, SET, flag_timeout);
 
     // SLAVE ADDR + WRITE
     I2C_Send7bitAddress(I2Cx, chip << 1, I2C_Direction_Transmitter);
-    waitForFlag(I2Cx, I2C_FLAG_ADDR, SET);
-    (void) I2Cx->SR2; // Clear ADDR
+    waitForFlag(I2Cx, I2C_FLAG_ADDR, SET, flag_timeout);
+    (void) I2Cx->SR1; // Reading SR1+SR2 Clear ADDR
+    (void) I2Cx->SR2;
 
     // REGISTER ADDR
-    waitForFlag(I2Cx, I2C_FLAG_TXE, SET);
+    waitForFlag(I2Cx, I2C_FLAG_TXE, SET, flag_timeout);
     I2C_SendData(I2Cx, reg);
 
     // SEND DATA
-    waitForFlag(I2Cx, I2C_FLAG_TXE, SET);
+    waitForFlag(I2Cx, I2C_FLAG_TXE, SET, flag_timeout);
     I2C_SendData(I2Cx, data);
 
-    waitForFlag(I2Cx, I2C_FLAG_TXE, SET);
-    waitForFlag(I2Cx, I2C_FLAG_BTF, SET);
+    // waitForFlag(I2Cx, I2C_FLAG_TXE, SET);
+    waitForFlag(I2Cx, I2C_FLAG_BTF, SET, flag_timeout);
     I2C_GenerateSTOP(I2Cx, ENABLE);
 }
 
-u8 I2C_Read(I2C_TypeDef *I2Cx, u8 chip, u8 reg) {
+u8 I2C_Read(I2C_TypeDef *I2Cx, u8 chip, u8 reg, u32 flag_timeout) {
     u8 ret = 0;
     // START
     I2C_GenerateSTART(I2Cx, ENABLE);
-    waitForFlag(I2Cx, I2C_FLAG_SB, SET);
+    waitForFlag(I2Cx, I2C_FLAG_SB, SET, flag_timeout);
 
     // SLAVE ADDR + READ
     I2C_Send7bitAddress(I2Cx, chip << 1, I2C_Direction_Transmitter);
-    waitForFlag(I2Cx, I2C_FLAG_ADDR, SET);
-    (void) I2Cx->SR2; // Clear ADDR
+    waitForFlag(I2Cx, I2C_FLAG_ADDR, SET, flag_timeout);
+    (void) I2Cx->SR1; // Clear ADDR
+    (void) I2Cx->SR2;
 
     // REGISTER ADDR
+    waitForFlag(I2Cx, I2C_FLAG_TXE, SET, flag_timeout);
     I2C_SendData(I2Cx, reg);
-    waitForFlag(I2Cx, I2C_FLAG_BTF, SET);
+    waitForFlag(I2Cx, I2C_FLAG_BTF, SET, flag_timeout);
 
     // REPEAT START
     I2C_GenerateSTART(I2Cx, ENABLE);
-    waitForFlag(I2Cx, I2C_FLAG_SB, SET);
+    waitForFlag(I2Cx, I2C_FLAG_SB, SET, flag_timeout);
 
     // SLAVE ADDR
     I2C_Send7bitAddress(I2Cx, chip << 1, I2C_Direction_Receiver);
-    waitForFlag(I2Cx, I2C_FLAG_ADDR, SET);
-    (void) I2Cx->SR2; // Clear ADDR
-
-    // GET DATA
+    waitForFlag(I2Cx, I2C_FLAG_ADDR, SET, flag_timeout);
+    
+    // To read 1 byte, disable ACK right after ADDR is sent
     I2C_AcknowledgeConfig(I2Cx, DISABLE);
+    // (void) I2Cx->SR1; // Clear ADDR
+    (void) I2Cx->SR2;
+
+    // Generate STOP right after ADDR is sent, so it will be sent after receiving the byte
     I2C_GenerateSTOP(I2Cx, ENABLE);
-    waitForFlag(I2Cx, I2C_FLAG_RXNE, SET);
+
+    // GET Data
+    waitForFlag(I2Cx, I2C_FLAG_RXNE, SET, flag_timeout);
     ret = I2C_ReceiveData(I2Cx);
 
-    waitForFlag(I2Cx, I2C_FLAG_BUSY, RESET);
+    // Restore ACK for next receptions
+    I2C_AcknowledgeConfig(I2Cx, ENABLE);
+    // waitForFlag(I2Cx, I2C_FLAG_BUSY, RESET);
     return ret;
 }
 
-int I2C_ReadBytes(I2C_TypeDef *I2Cx, u8 chip, u8 reg, u8 *buf, u8 size) {
+int I2C_ReadBytes(I2C_TypeDef *I2Cx, u8 chip, u8 reg, u8 *buf, u8 size, u32 flag_timeout) {
     u8 left = size;
-    u8 ix = 0;
 
     // One byte only
-    if(size == 1) {
-        buf[0] = I2C_Read(I2Cx, chip, reg);
+    if(left == 1) {
+        buf[0] = I2C_Read(I2Cx, chip, reg, flag_timeout);
         return 1;
     }
 
     // START
     I2C_GenerateSTART(I2Cx, ENABLE);
-    waitForFlag(I2Cx, I2C_FLAG_SB, SET);
+    waitForFlag(I2Cx, I2C_FLAG_SB, SET, flag_timeout);
 
     // SLAVE ADDR + READ
     I2C_Send7bitAddress(I2Cx, chip << 1, I2C_Direction_Transmitter);
-    waitForFlag(I2Cx, I2C_FLAG_ADDR, SET);
-    (void) I2Cx->SR2; // Clear ADDR
+    waitForFlag(I2Cx, I2C_FLAG_ADDR, SET, flag_timeout);
+    (void) I2Cx->SR1; // Clear ADDR
+    (void) I2Cx->SR2;
 
     // REGISTER ADDR
+    waitForFlag(I2Cx, I2C_FLAG_TXE, SET, flag_timeout);
     I2C_SendData(I2Cx, reg);
-    waitForFlag(I2Cx, I2C_FLAG_BTF, SET);
+    waitForFlag(I2Cx, I2C_FLAG_BTF, SET, flag_timeout);
 
     // REPEAT START
     I2C_GenerateSTART(I2Cx, ENABLE);
-    waitForFlag(I2Cx, I2C_FLAG_SB, SET);
+    waitForFlag(I2Cx, I2C_FLAG_SB, SET, flag_timeout);
 
     // SLAVE ADDR
     I2C_Send7bitAddress(I2Cx, chip << 1, I2C_Direction_Receiver);
-    waitForFlag(I2Cx, I2C_FLAG_ADDR, SET);
-    (void) I2Cx->SR2; // Clear ADDR
+    waitForFlag(I2Cx, I2C_FLAG_ADDR, SET, flag_timeout);
 
-    // GET DATA
-    I2C_AcknowledgeConfig(I2Cx, DISABLE);
-    I2C_GenerateSTOP(I2Cx, ENABLE);
-    waitForFlag(I2Cx, I2C_FLAG_RXNE, SET);
-    buf[ix] = I2C_ReceiveData(I2Cx);
+    if (left == 2) { // Special case for 2 bytes by RM0090
+        // NACK for second byte
+        I2C_AcknowledgeConfig(I2Cx, DISABLE);
+        // NACK for the next byte
+        I2C_NACKPositionConfig(I2Cx, I2C_NACKPosition_Next);
+        (void) I2Cx->SR1; // Reset ADDR
+        (void) I2Cx->SR2;
+        // STOP will be generated by hardware after receiving the second byte
+        I2C_GenerateSTOP(I2Cx, ENABLE);
+        
+        // READ first byte
+        waitForFlag(I2Cx, I2C_FLAG_RXNE, SET, flag_timeout);
+        buf[0] = I2C_ReceiveData(I2Cx);
+        
+        // READ second byte
+        waitForFlag(I2Cx, I2C_FLAG_RXNE, SET, flag_timeout);
+        buf[1] = I2C_ReceiveData(I2Cx);
+        
+        // Restore NACK position to default
+        I2C_NACKPositionConfig(I2Cx, I2C_NACKPosition_Current);
+    } else { // For more than 2 bytes, ACK for all but the last byte
+        (void) I2Cx->SR1;
+        (void) I2Cx->SR2;
 
-    waitForFlag(I2Cx, I2C_FLAG_BUSY, RESET);
+        while (left > 3) {
+            waitForFlag(I2Cx, I2C_FLAG_RXNE, SET, flag_timeout);
+            *buf++ = I2C_ReceiveData(I2Cx);
+            left--;
+        }
+
+        // Here we have only 3 bytes left to read (STM32 hardware specific)
+        // Wait for a data to be available in the data register and shift register
+        waitForFlag(I2Cx, I2C_FLAG_BTF, SET, flag_timeout);
+        // NACK for the last byte
+        I2C_AcknowledgeConfig(I2Cx, DISABLE);
+        // Read N-2 byte
+        *buf++ = I2C_ReceiveData(I2Cx);
+        // Generate STOP right after reading N-2 byte, so it will be sent after receiving the last byte
+        I2C_GenerateSTOP(I2Cx, ENABLE);
+        // Read N-1 byte
+        *buf++ = I2C_ReceiveData(I2Cx);
+        // Read last byte N
+        waitForFlag(I2Cx, I2C_FLAG_RXNE, SET, flag_timeout);
+        *buf++ = I2C_ReceiveData(I2Cx);
+    }
+    
+    // Restore ACK for next receptions
+    I2C_AcknowledgeConfig(I2Cx, ENABLE);
+    // waitForFlag(I2Cx, I2C_FLAG_BUSY, RESET, flag_timeout);
     return 0;
 }

@@ -25,6 +25,7 @@
 #define DS1307_I2C_GPIO     GPIOB
 #define DS1307_SCL_PIN      6
 #define DS1307_SDA_PIN      7
+#define DS1307_I2C_Timeout  100000U
 
 void DS1307_init(void);
 void DS1307_SetDateTime(u16 year, u8 month, u8 day, u8 hour, u8 min, u8 sec);
